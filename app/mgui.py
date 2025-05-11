@@ -8,6 +8,7 @@ from ui.monoc import StatusBar, Thermometer, MMenu, MChart, Mlabel  # noqa
 import aiorepl
 import time
 import lvgl as lv  # noqa
+from callbacks import callback
 
 
 class Clock:
@@ -56,7 +57,13 @@ class TMP36:
         return (((self.adc.read() / 4095) * 3.3) - 0.5) * 100
 
 
-async def gui(scr, display=None, adc=None, temp=None, dt=20):
+async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
+    # SPLASH
+    if hasattr(display.display_drv, "splash"):
+        display.display_drv.splash()
+        time.sleep(2)
+        lv.screen_load(scr)
+
     # TEMP SENSOR
     ts = TMP36(temp)
 
@@ -96,23 +103,34 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20):
     info.add_flag(lv.obj.FLAG.HIDDEN)
 
     # MENU
-    menu = MMenu(scr, scr=False)
+    menu = MMenu(scr, scr=False, sd=buzz)
     menu.apps[menu.btn1] = [thm, thm_lab]
     menu.apps[menu.btn2] = [plot, plot.lab, plot.graph]
     menu.apps[menu.btn3] = [info]
 
+    # INDEV GROUP
     wgroup = lv.group_create()
     wgroup.add_obj(menu.btn1)
     wgroup.add_obj(menu.btn2)
     wgroup.add_obj(menu.btn3)
     display.indev_test.set_group(wgroup)
 
+    if buzz:
+
+        @callback
+        def focus_cb(group):
+            buzz.beep()
+
+        wgroup.set_focus_cb(focus_cb)
+
     # AIOREPL
     g = __import__("__main__").__dict__
-    g.update(dummy=display, clock=clk, ts=ts, thm=thm)
+    g.update(display=display, scr=scr, sb=sb, clock=clk, ts=ts, thm=thm, sd=buzz)
     aiorepl_task = asyncio.create_task(aiorepl.task(g))
 
     print("OK")
+
+    # APP EVENT LOOP
     try:
         while True:
             i = int((adc.read() / 4095) * 100)
@@ -142,5 +160,10 @@ except Exception:
 
 
 def run(**kwargs):
-    testrunner.run(gui, __file__, disp_config=display_config, **kwargs)
-    testrunner.devicereset()
+    try:
+        testrunner.run(gui, __file__, disp_config=display_config, **kwargs)
+    except Exception as e:
+        sys.print_exception(e)
+    finally:
+        print("LVGL DEINIT OK")
+        testrunner.devicereset()

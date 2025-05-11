@@ -84,7 +84,7 @@ class Marc(lv.arc):
 
 class Mbutton(lv.button):
     def __init__(
-        self, parent, w=60, h=22, text="Test", scr=True, pc=False, focus=False
+        self, parent, w=60, h=22, text="Test", scr=True, pc=False, focus=False, sd=None
     ):
         if scr:
             self.scr = MonoChromeScreen(parent)
@@ -107,6 +107,7 @@ class Mbutton(lv.button):
         self._state = 0
         self._np = 0
         self._press_count = pc
+        self.sd = sd
 
         @callback.pressed(self)
         def _bp(event):
@@ -115,6 +116,8 @@ class Mbutton(lv.button):
                 self.lab.set_style_text_color(lv.color_black(), 0)
             if self._press_count:
                 self._np += 1
+            if self.sd:
+                self.sd.beep()
 
         @callback.released(self)
         def _br(event):
@@ -127,6 +130,9 @@ class Mbutton(lv.button):
             # print(f"btn {self.name} focused")
             if self._focus:
                 self.lab.set_style_text_color(lv.color_black(), 0)
+
+            # if self.sd:
+            #     self.sd.beep()
 
         @callback.defocused(self)
         def _bd(event):
@@ -373,7 +379,7 @@ class Mlabel(lv.label):
 
 
 class MMenu(lv.obj):
-    def __init__(self, parent, w=127, h=44, scr=True):
+    def __init__(self, parent, w=127, h=44, scr=True, sd=None):
         if scr:
             self.scr = MonoChromeScreen(parent)
             super().__init__(self.scr)
@@ -381,6 +387,7 @@ class MMenu(lv.obj):
         else:
             super().__init__(parent)
 
+        self.sd = sd
         parent.add_flag(lv.obj.FLAG.CLICKABLE)
 
         @callback.pressed(parent, self)
@@ -407,13 +414,13 @@ class MMenu(lv.obj):
         self.align(lv.ALIGN.BOTTOM_MID, 0, 0)
 
         self.btn1 = Mbutton(
-            self, w=20, h=20, text=lv.SYMBOL.PLAY, scr=False, focus=True
+            self, w=20, h=20, text=lv.SYMBOL.PLAY, scr=False, focus=True, sd=sd
         )
         self.btn2 = Mbutton(
-            self, w=20, h=20, text=lv.SYMBOL.AUDIO, scr=False, focus=True
+            self, w=20, h=20, text=lv.SYMBOL.AUDIO, scr=False, focus=True, sd=sd
         )
         self.btn3 = Mbutton(
-            self, w=20, h=20, text=lv.SYMBOL.SETTINGS, scr=False, focus=True
+            self, w=20, h=20, text=lv.SYMBOL.SETTINGS, scr=False, focus=True, sd=sd
         )
 
         self.btns = [self.btn1, self.btn2, self.btn3]
@@ -429,6 +436,8 @@ class MMenu(lv.obj):
             print(f"btn {self.btns[self.selected].name} pressed")
             self.btns[self.selected].lab.set_style_text_color(lv.color_black(), 0)
             self.press()
+            # if self.sd:
+            #     self.sd.beep()
 
         # self.btn1.toggle()
 

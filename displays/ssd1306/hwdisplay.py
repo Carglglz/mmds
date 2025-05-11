@@ -3,15 +3,19 @@ from machine import I2C
 import ssd1306
 import framebuf
 import sys
-
 import pyb
 
 try:
     import display_config
 
     DEBUG = display_config.DEBUG
+    SENSIBILITY = 10
+    if hasattr(display_config, "SENSIBILITY"):
+        SENSIBILITY = getattr(display_config, "SENSIBILITY")
 except Exception:
+    print("display_config NOT FOUND")
     DEBUG = False
+    SENSIBILITY = 10
 
 
 class Device:
@@ -27,15 +31,16 @@ class PotEncoder:
     def read(self):
         return int((self.adc.read() / 4095) * 100)
 
-    def get_key_event(self, sensibility=10):
+    def get_step_event(self, sensibility=SENSIBILITY):
         cv = self.read()
         if abs(cv - self._last_v) >= sensibility:
             if cv > self._last_v:
                 self._last_v = cv
-                return lv.KEY.LEFT
+                return -1  # LEFT
             else:
                 self._last_v = cv
-                return lv.KEY.RIGHT
+                return 1  # RIGHT
+        return 0
 
 
 class HwDisplayDriver:
@@ -47,7 +52,7 @@ class HwDisplayDriver:
         self.devices = [Device()]
         self.btn = pyb.Switch()
         self.pot = PotEncoder()
-        self._debug = False
+        self._debug = DEBUG
         self._press_event = False
         self._key_pressed = None
         self._x = int(width / 2)
@@ -60,6 +65,8 @@ class HwDisplayDriver:
         self.ssd.show()
         self.vdisp = width < height
         self.ssd.rotate(True)
+        # self.splash()
+        # time.sleep(2)
         # buffer_size = width * (self.color_depth // 8) * (height // 10)
         # print(buffer_size)
         # self.disp_buff = bytearray(buffer_size)
@@ -81,6 +88,17 @@ class HwDisplayDriver:
 
     def get_y(self):
         self._y = next(self.__y)
+
+    def splash(self):
+        self.ssd.fill(0)
+        self.ssd.fill_rect(50, 20, 32, 32, 1)
+        # self.ssd.fill_rect(52, 22, 28, 28, 0)
+        self.ssd.vline(59, 28, 28, 0)
+        self.ssd.vline(66, 18, 28, 0)
+        self.ssd.vline(73, 28, 28, 0)
+        self.ssd.fill_rect(77, 46, 2, 4, 0)
+        self.ssd.text("MicroPython", 22, 56, 1)
+        self.ssd.show()
 
     def rgb565_to_mono_hmsb(self, rgb565_buffer, width, height, threshold=128):
         """
@@ -239,35 +257,40 @@ class HwDisplayDriver:
             sys.print_exception(e)
 
     def read_cb(self, indev, data):
-        # print("read_cb:")
-        if self.btn.value() and not self._press_event:
-            self._key_pressed = lv.KEY.ENTER
+        try:
+            # print("read_cb:")
+            if self.btn.value() and not self._press_event:
+                self._key_pressed = lv.KEY.ENTER
 
-            data.state = lv.INDEV_STATE.PRESSED
-            # data.enc_diff = self._key_pressed
-            self._press_event = True
-            if self._debug:
-                print("btn press")
-            return
-        elif not self.btn.value() and self._press_event:
-            if self._debug:
-                print("btn release")
-            self._press_event = False
-            self._key_pressed = lv.KEY.ENTER
-            # data.enc_diff = self._key_pressed
-            data.state = lv.INDEV_STATE.RELEASED
-            return
-
-        # ROT ENCODER
-
-        self._key_pressed = self.pot.get_key_event()
-        if self._key_pressed:
-            data.enc_diff = self._key_pressed
-            # data.state = lv.INDEV_STATE.PRESSED
-            if self._key_pressed in (lv.KEY.PREV, lv.KEY.LEFT):
+                data.state = lv.INDEV_STATE.PRESSED
+                # data.enc_diff = self._key_pressed
+                self._press_event = True
                 if self._debug:
-                    print("enc left/prev")
-            elif self._key_pressed in (lv.KEY.NEXT, lv.KEY.RIGHT):
+                    print("btn press")
+                return
+            elif not self.btn.value() and self._press_event:
                 if self._debug:
-                    print("enc right/next")
-            return
+                    print("btn release")
+                self._press_event = False
+                self._key_pressed = lv.KEY.ENTER
+                # data.enc_diff = self._key_pressed
+                data.state = lv.INDEV_STATE.RELEASED
+                return
+
+            # ROT ENCODER
+
+            self._key_pressed = self.pot.get_step_event()
+            if self._key_pressed != 0:
+                data.enc_diff = self._key_pressed
+                # data.state = lv.INDEV_STATE.PRESSED
+                # if self._key_pressed in (lv.KEY.PREV, lv.KEY.LEFT):
+                if self._key_pressed < 0:
+                    if self._debug:
+                        print("enc left/prev")
+                elif self._key_pressed > 0:
+                    if self._debug:
+                        print("enc right/next")
+                return
+
+        except Exception as e:
+            print(e)
