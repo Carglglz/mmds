@@ -1,37 +1,50 @@
 import sys
 import asyncio
-import os
 
-sys.path.append("..")
-sys.path.append(os.getcwd())
+try:
+    # running from sim/device
+    import os
+
+    sys.path.append(os.getcwd())
+    import board_config
+
+except ImportError:
+    # running from micropython test suite
+    root_testdir = sys.path[0].rsplit("/", 1)[0]
+    sys.path.append(f"{root_testdir}/app")
+    sys.path.append(f"{root_testdir}/displays/sim")
+
+
 import testrunner
 
-sys.path.append(sys.path[0].rsplit("/", 1)[0])
-from monoc import StatusBar
+from ui.monoc import StatusBar
+import time
+from mgui import Clock
 
-import pyb
-
-# This is a basic test to test buttons, labels,
-# RGB colors, layout aligment and events.
+# This is a status bar test
 
 
-async def demo(scr, display=None):
+async def test(scr, display=None):
     sbar = StatusBar(scr, scr=False)
+    clk = Clock()
 
-    adc = pyb.ADC(pyb.Pin.board.X19)
-    await asyncio.sleep_ms(500)  # await so the frame can be rendered
     print("MONO STATUS BAR TEST:")
     i = 0
+
+    t0 = time.mktime(time.localtime())
     while True:
-        # bar/arc + potentiometer
-        i = int((adc.read() / 4095) * 100)
         sbar.batt.set_bvalue(i)
         sbar.wifi.set_wvalue(i - 100)
+
+        dt = time.mktime(time.localtime()) - t0
+        sbar.clock.set_text(f"{clk.tmdelta_fmt(dt)[3:]}")
         await asyncio.sleep_ms(20)
+
+        print(i)
         if i == 100:
-            print(i)
             print("OK")
             break
+        i += 1
 
 
 __file__ = globals().get("__file__", "test")
@@ -45,5 +58,5 @@ except Exception:
     display_config = testrunner.display_config
 
 
-testrunner.run(demo, __file__, disp_config=display_config)
+testrunner.run(test, __file__, disp_config=display_config)
 testrunner.devicereset()

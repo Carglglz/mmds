@@ -1,5 +1,5 @@
 import lvgl as lv
-from style_monoc import *
+from ui.style_monoc import *
 from callbacks import callback
 
 
@@ -83,7 +83,9 @@ class Marc(lv.arc):
 
 
 class Mbutton(lv.button):
-    def __init__(self, parent, w=60, h=22, text="Test", scr=True):
+    def __init__(
+        self, parent, w=60, h=22, text="Test", scr=True, pc=False, focus=False
+    ):
         if scr:
             self.scr = MonoChromeScreen(parent)
             super().__init__(self.scr)
@@ -92,8 +94,10 @@ class Mbutton(lv.button):
 
         self.add_style(MonoButtStyle(), lv.PART.MAIN)
         self.add_style(MonoButtPStyle(), lv.PART.MAIN | lv.STATE.PRESSED)
-        self.add_style(MonoButtPStyle(), lv.PART.MAIN | lv.STATE.FOCUSED)
+        if focus:
+            self.add_style(MonoButtPStyle(), lv.PART.MAIN | lv.STATE.FOCUSED)
 
+        self._focus = focus
         self.set_size(w, h)
         self.lab = lv.label(self)
         self.lab.set_text(text)
@@ -101,25 +105,36 @@ class Mbutton(lv.button):
         self.name = text
         self.lab.center()
         self._state = 0
+        self._np = 0
+        self._press_count = pc
 
         @callback.pressed(self)
         def _bp(event):
             print(f"btn {self.name} pressed")
-            self.lab.set_style_text_color(lv.color_black(), 0)
+            if not self._focus:
+                self.lab.set_style_text_color(lv.color_black(), 0)
+            if self._press_count:
+                self._np += 1
 
         @callback.released(self)
         def _br(event):
             print(f"btn {self.name} released")
-            # self.lab.set_style_text_color(lv.color_white(), 0)
+            if not self._focus:
+                self.lab.set_style_text_color(lv.color_white(), 0)
 
         @callback.focused(self)
         def _bf(event):
             # print(f"btn {self.name} focused")
-            self.lab.set_style_text_color(lv.color_black(), 0)
+            if self._focus:
+                self.lab.set_style_text_color(lv.color_black(), 0)
 
         @callback.defocused(self)
         def _bd(event):
             # print(f"btn {self.name} defocused")
+            if self._focus:
+                self.lab.set_style_text_color(lv.color_white(), 0)
+
+        if not focus:
             self.lab.set_style_text_color(lv.color_white(), 0)
 
     def toggle(self):
@@ -362,8 +377,17 @@ class MMenu(lv.obj):
         if scr:
             self.scr = MonoChromeScreen(parent)
             super().__init__(self.scr)
+
         else:
             super().__init__(parent)
+
+        parent.add_flag(lv.obj.FLAG.CLICKABLE)
+
+        @callback.pressed(parent, self)
+        def _back(event):
+            if self._backmode:
+                print("back")
+                self.press()
 
         self.add_style(BoxStyle(), lv.PART.MAIN)
 
@@ -382,9 +406,15 @@ class MMenu(lv.obj):
         self.remove_flag(lv.obj.FLAG.SCROLLABLE)
         self.align(lv.ALIGN.BOTTOM_MID, 0, 0)
 
-        self.btn1 = Mbutton(self, w=20, h=20, text=lv.SYMBOL.PLAY, scr=False)
-        self.btn2 = Mbutton(self, w=20, h=20, text=lv.SYMBOL.AUDIO, scr=False)
-        self.btn3 = Mbutton(self, w=20, h=20, text=lv.SYMBOL.SETTINGS, scr=False)
+        self.btn1 = Mbutton(
+            self, w=20, h=20, text=lv.SYMBOL.PLAY, scr=False, focus=True
+        )
+        self.btn2 = Mbutton(
+            self, w=20, h=20, text=lv.SYMBOL.AUDIO, scr=False, focus=True
+        )
+        self.btn3 = Mbutton(
+            self, w=20, h=20, text=lv.SYMBOL.SETTINGS, scr=False, focus=True
+        )
 
         self.btns = [self.btn1, self.btn2, self.btn3]
         self.apps = {}

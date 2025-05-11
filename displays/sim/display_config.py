@@ -1,8 +1,7 @@
 import lvgl as lv
 
 MODE = "interactive"
-POINTER = "encoder"
+POINTER = "sim"
 WIDTH = 128
 HEIGHT = 64
 COLOR_FORMAT = lv.COLOR_FORMAT.RGB565
-DEBUG = False

@@ -1,20 +1,29 @@
 import sys
 import asyncio
-import os
 
-sys.path.append("..")
-sys.path.append(os.getcwd())
+try:
+    # running from sim/device
+    import os
+
+    sys.path.append(os.getcwd())
+    import board_config
+
+except ImportError:
+    # running from micropython test suite
+    root_testdir = sys.path[0].rsplit("/", 1)[0]
+    sys.path.append(f"{root_testdir}/app")
+    sys.path.append(f"{root_testdir}/displays/sim")
+
+
 import testrunner
 
-sys.path.append(sys.path[0].rsplit("/", 1)[0])
-from monoc import Mbar
+from ui.monoc import Mbar
 import lvgl as lv
 
-# This is a basic test to test buttons, labels,
-# RGB colors, layout aligment and events.
+# This is a basic bar test
 
 
-async def demo(scr, display=None):
+async def test(scr, display=None):
     mbar = Mbar(scr, w=lv.pct(60), scr=False)
 
     await asyncio.sleep_ms(500)  # await so the frame can be rendered
@@ -35,11 +44,11 @@ __file__ = globals().get("__file__", "test")
 try:
     import display_config
 
-    display_config.MODE = "interactive"
-    display_config.POINTER = "sim"
 except Exception:
     display_config = testrunner.display_config
 
 
-testrunner.run(demo, __file__, disp_config=display_config)
+display_config.MODE = "interactive"
+display_config.POINTER = "sim"
+testrunner.run(test, __file__, disp_config=display_config)
 testrunner.devicereset()

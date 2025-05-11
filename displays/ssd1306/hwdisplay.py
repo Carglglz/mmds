@@ -6,8 +6,12 @@ import sys
 
 import pyb
 
-PRESS_EVENT = 1025
-RELEASE_EVENT = 1026
+try:
+    import display_config
+
+    DEBUG = display_config.DEBUG
+except Exception:
+    DEBUG = False
 
 
 class Device:
@@ -242,10 +246,12 @@ class HwDisplayDriver:
             data.state = lv.INDEV_STATE.PRESSED
             # data.enc_diff = self._key_pressed
             self._press_event = True
-            print("btn press")
+            if self._debug:
+                print("btn press")
             return
         elif not self.btn.value() and self._press_event:
-            print("btn release")
+            if self._debug:
+                print("btn release")
             self._press_event = False
             self._key_pressed = lv.KEY.ENTER
             # data.enc_diff = self._key_pressed
@@ -259,7 +265,9 @@ class HwDisplayDriver:
             data.enc_diff = self._key_pressed
             # data.state = lv.INDEV_STATE.PRESSED
             if self._key_pressed in (lv.KEY.PREV, lv.KEY.LEFT):
-                print("enc left/prev")
+                if self._debug:
+                    print("enc left/prev")
             elif self._key_pressed in (lv.KEY.NEXT, lv.KEY.RIGHT):
-                print("enc right/next")
+                if self._debug:
+                    print("enc right/next")
             return

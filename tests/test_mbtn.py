@@ -1,38 +1,38 @@
 import sys
 import asyncio
-import os
-import pyb
 import lvgl as lv
 
-sys.path.append("..")
-sys.path.append(os.getcwd())
+try:
+    # running from sim/device
+    import os
+
+    sys.path.append(os.getcwd())
+    import board_config
+
+except ImportError:
+    # running from micropython test suite
+    root_testdir = sys.path[0].rsplit("/", 1)[0]
+    sys.path.append(f"{root_testdir}/app")
+    sys.path.append(f"{root_testdir}/displays/sim")
+
 import testrunner
+from ui.monoc import Mbutton
 
-from monoc import Mbutton
-
-# This is a basic test to test buttons, labels,
-# RGB colors, layout aligment and events.
+# This is a basic button test
 
 
-async def demo(scr, display=None):
-    mbar = Mbutton(scr, scr=False)
+async def test(scr, display=None):
+    mbtn = Mbutton(scr, scr=False, pc=True, focus=True)
+
+    wgroup = lv.group_create()
+    wgroup.add_obj(mbtn)
+    display.indev_test.set_group(wgroup)
 
     await asyncio.sleep_ms(500)  # await so the frame can be rendered
     print("MONO BUTTON TEST:")
-    i = 0
     while True:
-        if pyb.Switch().value():
-            i += 1
-            # mbar.set_mvalue(i)
-            mbar.send_event(lv.EVENT.PRESSED, None)
-            print(i)
-
-        else:
-            mbar.send_event(lv.EVENT.RELEASED, None)
         await asyncio.sleep_ms(200)
-        if i == 3:
-            mbar.send_event(lv.EVENT.RELEASED, None)
-
+        if mbtn._np >= 3:
             await asyncio.sleep_ms(200)
             print("OK")
             break
@@ -43,11 +43,11 @@ __file__ = globals().get("__file__", "test")
 try:
     import display_config
 
-    display_config.MODE = "interactive"
-    display_config.POINTER = "sim"
 except Exception:
     display_config = testrunner.display_config
 
 
-testrunner.run(demo, __file__, disp_config=display_config)
+display_config.MODE = "interactive"
+display_config.POINTER = "encoder"
+testrunner.run(test, __file__, disp_config=display_config)
 testrunner.devicereset()

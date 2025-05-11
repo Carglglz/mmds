@@ -94,14 +94,14 @@ class TestDisplayDriver:
             self.mouse = lv.sdl_mouse_create()
             self.keyboard = lv.sdl_keyboard_create()
             self.keyboard.set_group(self.group)
-            if pointer == "sim":
-                self.indev = lv.indev_create()
-                self.indev.set_display(self.lv_display_int)
-                self.indev.set_group(self.group)
-                self.indev.set_type(lv.INDEV_TYPE.POINTER)
+            if pointer in ("sim", "encoder"):
+                self.indev_test = lv.indev_create()
+                self.indev_test.set_display(self.lv_display_int)
+                self.indev_test.set_group(self.group)
+                self.indev_test.set_type(lv.INDEV_TYPE.POINTER)
                 # NOTE: only one indev pointer allowed, use the keyboard
                 # for interactive control
-                self.indev.set_read_cb(self._read_cb)
+                self.indev_test.set_read_cb(self._read_cb)
 
     def set_test_name(self, name):
         self.display_drv.test_name = name

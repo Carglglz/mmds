@@ -1,7 +1,10 @@
 DISPLAY_MODE: INTERACTIVE
-INDEV_MODE: SIM
+INDEV_MODE: ENCODER
 MONO BUTTON TEST:
-1
-2
-3
+btn Test pressed
+btn Test released
+btn Test pressed
+btn Test released
+btn Test pressed
+btn Test released
 OK

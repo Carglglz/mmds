@@ -1,9 +1,8 @@
 import lvgl as lv
 
 
-
 class PlainStyle(lv.style_t):
-    name = 'PlainStyle'
+    name = "PlainStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -22,9 +21,8 @@ class PlainStyle(lv.style_t):
         self.set_radius(0)
 
 
-
 class MonoStyle(lv.style_t):
-    name = 'MonoStyle'
+    name = "MonoStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -37,10 +35,10 @@ class MonoStyle(lv.style_t):
         self.set_margin_right(0)
 
         self.set_border_width(0)
-        self.set_border_color(lv.color_make(255,255,255))
+        self.set_border_color(lv.color_make(255, 255, 255))
 
         self.set_outline_width(1)
-        self.set_outline_color(lv.color_make(255,255,255))
+        self.set_outline_color(lv.color_make(255, 255, 255))
 
         self.set_shadow_width(0)
         self.set_shadow_offset_x(0)
@@ -52,9 +50,8 @@ class MonoStyle(lv.style_t):
         self.set_align(lv.ALIGN.CENTER)
 
 
-
 class MonoButtStyle(MonoStyle):
-    name = 'MonoButtStyle'
+    name = "MonoButtStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -66,9 +63,8 @@ class MonoButtStyle(MonoStyle):
         self.set_outline_width(1)
 
 
-
 class MonoButtPStyle(MonoButtStyle):
-    name = 'MonoButtPStyle'
+    name = "MonoButtPStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -79,13 +75,12 @@ class MonoButtPStyle(MonoButtStyle):
 
         self.set_outline_width(2)
 
-        self.set_bg_color(lv.color_make(255,255,255))
+        self.set_bg_color(lv.color_make(255, 255, 255))
         self.set_bg_opa(lv.OPA.COVER)
 
 
-
 class MonoArcStyle(lv.style_t):
-    name = 'MonoArcStyle'
+    name = "MonoArcStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -98,7 +93,7 @@ class MonoArcStyle(lv.style_t):
         self.set_margin_right(0)
 
         self.set_border_width(0)
-        self.set_border_color(lv.color_make(0,255,0))
+        self.set_border_color(lv.color_make(0, 255, 0))
 
         self.set_outline_width(0)
         self.set_outline_color(lv.color_white())
@@ -108,15 +103,14 @@ class MonoArcStyle(lv.style_t):
         self.set_bg_color(lv.color_black())
         self.set_bg_opa(0)
 
-        self.set_arc_color(lv.color_make(255,255,255))
+        self.set_arc_color(lv.color_make(255, 255, 255))
         self.set_arc_width(8)
 
         self.set_x(0)
 
 
-
 class MonoArcIndStyle(MonoStyle):
-    name = 'MonoArcIndStyle'
+    name = "MonoArcIndStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -130,9 +124,8 @@ class MonoArcIndStyle(MonoStyle):
         self.set_arc_width(4)
 
 
-
 class MonoArcKnobStyle(MonoStyle):
-    name = 'MonoArcKnobStyle'
+    name = "MonoArcKnobStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -145,9 +138,8 @@ class MonoArcKnobStyle(MonoStyle):
         self.set_outline_width(0)
 
 
-
 class BoxStyle(lv.style_t):
-    name = 'BoxStyle'
+    name = "BoxStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -162,11 +154,11 @@ class BoxStyle(lv.style_t):
         self.set_margin_right(0)
 
         self.set_border_width(0)
-        self.set_border_color(lv.color_make(255,255,255))
+        self.set_border_color(lv.color_make(255, 255, 255))
         self.set_border_side(11)
 
         self.set_outline_width(0)
-        self.set_outline_color(lv.color_make(255,255,255))
+        self.set_outline_color(lv.color_make(255, 255, 255))
 
         self.set_shadow_width(0)
         self.set_shadow_offset_x(0)
@@ -182,9 +174,8 @@ class BoxStyle(lv.style_t):
         self.set_y(0)
 
 
-
 class LabelStyle(lv.style_t):
-    name = 'LabelStyle'
+    name = "LabelStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -197,9 +188,8 @@ class LabelStyle(lv.style_t):
         self.set_y(0)
 
 
-
 class BarStyle(lv.style_t):
-    name = 'BarStyle'
+    name = "BarStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -214,7 +204,7 @@ class BarStyle(lv.style_t):
         self.set_margin_right(0)
 
         self.set_border_width(1)
-        self.set_border_color(lv.color_make(255,255,255))
+        self.set_border_color(lv.color_make(255, 255, 255))
 
         self.set_outline_width(1)
 
@@ -232,22 +222,20 @@ class BarStyle(lv.style_t):
         self.set_y(0)
 
 
-
 class BarIndStyle(BarStyle):
-    name = 'BarIndStyle'
+    name = "BarIndStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
 
         self.set_radius(1)
 
-        self.set_bg_color(lv.color_make(255,255,255))
+        self.set_bg_color(lv.color_make(255, 255, 255))
         self.set_bg_opa(lv.OPA.COVER)
 
 
-
 class MonoWifiStyle(lv.style_t):
-    name = 'MonoWifiStyle'
+    name = "MonoWifiStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -260,7 +248,7 @@ class MonoWifiStyle(lv.style_t):
         self.set_margin_right(0)
 
         self.set_border_width(0)
-        self.set_border_color(lv.color_make(0,255,0))
+        self.set_border_color(lv.color_make(0, 255, 0))
 
         self.set_outline_width(0)
         self.set_outline_color(lv.color_white())
@@ -270,15 +258,14 @@ class MonoWifiStyle(lv.style_t):
         self.set_bg_color(lv.color_black())
         self.set_bg_opa(0)
 
-        self.set_arc_color(lv.color_make(255,255,255))
+        self.set_arc_color(lv.color_make(255, 255, 255))
         self.set_arc_width(2)
 
         self.set_x(0)
 
 
-
 class MonoWifiIndStyle(MonoWifiStyle):
-    name = 'MonoWifiIndStyle'
+    name = "MonoWifiIndStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -292,9 +279,8 @@ class MonoWifiIndStyle(MonoWifiStyle):
         self.set_arc_width(0)
 
 
-
 class MonoWifiKnobStyle(MonoStyle):
-    name = 'MonoWifiKnobStyle'
+    name = "MonoWifiKnobStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -307,9 +293,8 @@ class MonoWifiKnobStyle(MonoStyle):
         self.set_outline_width(0)
 
 
-
 class ThermStyle(lv.style_t):
-    name = 'ThermStyle'
+    name = "ThermStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -324,31 +309,29 @@ class ThermStyle(lv.style_t):
         self.set_margin_right(0)
 
         self.set_border_width(1)
-        self.set_border_color(lv.color_make(255,255,255))
+        self.set_border_color(lv.color_make(255, 255, 255))
 
         self.set_outline_width(0)
         self.set_outline_color(lv.color_white())
 
-        self.set_bg_color(lv.color_make(0,0,0))
+        self.set_bg_color(lv.color_make(0, 0, 0))
         self.set_bg_opa(lv.OPA.COVER)
 
 
-
 class ThermIndStyle(ThermStyle):
-    name = 'ThermIndStyle'
+    name = "ThermIndStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
 
         self.set_radius(0)
 
-        self.set_bg_color(lv.color_make(255,255,255))
+        self.set_bg_color(lv.color_make(255, 255, 255))
         self.set_bg_opa(lv.OPA.COVER)
 
 
-
 class ChartStyle(lv.style_t):
-    name = 'ChartStyle'
+    name = "ChartStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -361,9 +344,8 @@ class ChartStyle(lv.style_t):
         self.set_border_width(0)
 
 
-
 class ChartItemStyle(lv.style_t):
-    name = 'ChartItemStyle'
+    name = "ChartItemStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -374,9 +356,8 @@ class ChartItemStyle(lv.style_t):
         self.set_line_rounded(True)
 
 
-
 class ChartIndStyle(lv.style_t):
-    name = 'ChartIndStyle'
+    name = "ChartIndStyle"
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -399,4 +380,25 @@ class ChartIndStyle(lv.style_t):
         self.set_pad_top(0)
         self.set_pad_bottom(0)
 
-styles = [PlainStyle, MonoStyle, MonoButtStyle, MonoButtPStyle, MonoArcStyle, MonoArcIndStyle, MonoArcKnobStyle, BoxStyle, LabelStyle, BarStyle, BarIndStyle, MonoWifiStyle, MonoWifiIndStyle, MonoWifiKnobStyle, ThermStyle, ThermIndStyle, ChartStyle, ChartItemStyle, ChartIndStyle]
+
+styles = [
+    PlainStyle,
+    MonoStyle,
+    MonoButtStyle,
+    MonoButtPStyle,
+    MonoArcStyle,
+    MonoArcIndStyle,
+    MonoArcKnobStyle,
+    BoxStyle,
+    LabelStyle,
+    BarStyle,
+    BarIndStyle,
+    MonoWifiStyle,
+    MonoWifiIndStyle,
+    MonoWifiKnobStyle,
+    ThermStyle,
+    ThermIndStyle,
+    ChartStyle,
+    ChartItemStyle,
+    ChartIndStyle,
+]
