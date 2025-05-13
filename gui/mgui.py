@@ -126,7 +126,8 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
     # AIOREPL
     g = __import__("__main__").__dict__
     g.update(display=display, scr=scr, sb=sb, clock=clk, ts=ts, thm=thm, sd=buzz)
-    aiorepl_task = asyncio.create_task(aiorepl.task(g))
+
+    aiorepl_task = asyncio.create_task(aiorepl.task(g, shutdown_on_exit=False))
 
     print("OK")
 
@@ -145,6 +146,9 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
             plot.update(scale=10)
 
             await asyncio.sleep_ms(dt)
+
+            if aiorepl_task.done():
+                break
 
     except KeyboardInterrupt:
         print("DONE")

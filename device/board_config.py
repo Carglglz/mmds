@@ -1,8 +1,9 @@
 import sys
 import os
 
-sys.path.append(f"{os.getcwd()}/app")
+sys.path.append(f"{os.getcwd()}/gui")
 sys.path.append(f"{os.getcwd()}/display")
+sys.path.append(f"{os.getcwd()}/audio")
 
 import pyb
 from pybbuzz import Buzzer

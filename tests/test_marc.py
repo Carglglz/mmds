@@ -11,7 +11,7 @@ try:
 except ImportError:
     # running from micropython test suite
     root_testdir = sys.path[0].rsplit("/", 1)[0]
-    sys.path.append(f"{root_testdir}/app")
+    sys.path.append(f"{root_testdir}/gui")
     sys.path.append(f"{root_testdir}/displays/sim")
 
 import testrunner

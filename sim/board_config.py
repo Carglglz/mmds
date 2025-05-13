@@ -3,7 +3,7 @@ import os
 import random
 
 
-sys.path.append(f"{os.getcwd()}/app")
+sys.path.append(f"{os.getcwd()}/gui")
 sys.path.append(f"{os.getcwd()}/display")
 
 
