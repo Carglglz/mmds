@@ -68,6 +68,8 @@ class TestDisplayDriver:
                     len(self._frame_buffer1),
                     render_mode,
                 )
+            if hasattr(display_drv, "set_frame_buffer"):
+                display_drv.set_frame_buffer(self._frame_buffer1)
             self.indev_test = lv.indev_create()
             self.indev_test.set_display(lv.display_get_default())
             self.indev_test.set_group(lv.group_get_default())
@@ -276,7 +278,7 @@ def get_display(
     alloc_buffer = lambda buffersize: memoryview(bytearray(buffer_size))
 
     factor = 10  ### Must be 1 if using an RGBBus
-    double_buf = True  ### Must be False if using an RGBBus
+    double_buf = False  ### Must be False if using an RGBBus
 
     buffer_size = disp.width * disp.height * (disp.color_depth // 8) // factor
 

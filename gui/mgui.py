@@ -4,11 +4,12 @@ import asyncio
 
 import testrunner
 
-from ui.monoc import StatusBar, Thermometer, MMenu, MChart, Mlabel  # noqa
+from ui.monoc import StatusBar, Thermometer, MMenu, MChart, Mlabel, Marc  # noqa
 import aiorepl
 import time
 import lvgl as lv  # noqa
 from callbacks import callback
+import gc
 
 
 class Clock:
@@ -102,11 +103,17 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
     info.set_style_text_font(lv.font_montserrat_14, 0)
     info.add_flag(lv.obj.FLAG.HIDDEN)
 
+    arc_setting = Marc(scr, w=44, h=44, rng=(0, 100), symb="", scr=False)
+    arc_setting.align(lv.ALIGN.BOTTOM_RIGHT, 0, 0)
+    arc_setting.lab.align(lv.ALIGN.RIGHT_MID, -10, 10)
+    arc_setting.add_flag(lv.obj.FLAG.HIDDEN)
+    arc_setting.lab.add_flag(lv.obj.FLAG.HIDDEN)
+
     # MENU
     menu = MMenu(scr, scr=False, sd=buzz)
     menu.apps[menu.btn1] = [thm, thm_lab]
     menu.apps[menu.btn2] = [plot, plot.lab, plot.graph]
-    menu.apps[menu.btn3] = [info]
+    menu.apps[menu.btn3] = [info, arc_setting, arc_setting.lab]
 
     # INDEV GROUP
     wgroup = lv.group_create()
@@ -130,7 +137,7 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
     aiorepl_task = asyncio.create_task(aiorepl.task(g, shutdown_on_exit=False))
 
     print("OK")
-
+    gc.collect()
     # APP EVENT LOOP
     try:
         while True:
@@ -139,6 +146,7 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
             sb.batt.set_bvalue(100 - i)
             sb.wifi.set_wvalue(-i)
             sb.clock.set_text(clk.time())
+            arc_setting.set_mvalue(100 - i)
 
             thm.set_tvalue(int(tmp))
             thm_lab.set_text(f"{tmp:.1f} C")

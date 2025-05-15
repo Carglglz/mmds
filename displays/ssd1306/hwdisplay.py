@@ -44,7 +44,7 @@ class PotEncoder:
 
 
 class HwDisplayDriver:
-    def __init__(self, width=128, height=64, color_format=lv.COLOR_FORMAT.I1):
+    def __init__(self, width=128, height=64, color_format=lv.COLOR_FORMAT.RGB565):
         self.width = width
         self.height = height
         self.color_depth = lv.color_format_get_bpp(color_format)
@@ -55,24 +55,13 @@ class HwDisplayDriver:
         self._debug = DEBUG
         self._press_event = False
         self._key_pressed = None
-        self._x = int(width / 2)
-        self.__y = self.gen_y()
-
         self.i2c = I2C("X")
         self.ssd = ssd1306.SSD1306_I2C(128, 64, self.i2c)
-
         self.ssd.fill(0)
         self.ssd.show()
         self.vdisp = width < height
         self.ssd.rotate(True)
-        # self.splash()
-        # time.sleep(2)
-        # buffer_size = width * (self.color_depth // 8) * (height // 10)
-        # print(buffer_size)
-        # self.disp_buff = bytearray(buffer_size)
-        # self.disp_mv = memoryview(self.disp_buff)
-
-        # self.async_indev_start()
+        self._disp_buff = None
 
     @property
     def debug(self):
@@ -82,12 +71,10 @@ class HwDisplayDriver:
     def debug(self, x):
         self._debug = x
 
-    def gen_y(self):
-        for i in range(0, self.height * 2, int(self.height / 6)):
-            yield i
-
-    def get_y(self):
-        self._y = next(self.__y)
+    def set_frame_buffer(self, fb):
+        self._disp_buff = framebuf.FrameBuffer(
+            fb, self.width, self.height // 10, framebuf.RGB565
+        )
 
     def splash(self):
         self.ssd.fill(0)
@@ -100,54 +87,9 @@ class HwDisplayDriver:
         self.ssd.text("MicroPython", 22, 56, 1)
         self.ssd.show()
 
-    def rgb565_to_mono_hmsb(self, rgb565_buffer, width, height, threshold=128):
+    def rgb565_to_mono(self, rgb565_buffer, width, height, x_off, y_off, threshold=128):
         """
-        Convert RGB565 buffer to monochrome HMSB buffer.
-
-        Args:
-            rgb565_buffer: Input buffer of 16-bit RGB565 pixels
-            width: Image width in pixels
-            height: Image height in pixels
-            threshold: Luminance threshold (0-255) for monochrome conversion
-
-        Returns:
-            bytearray: Monochrome HMSB buffer
-        """
-        # Calculate output buffer size (1 bit per pixel, 8 pixels per byte)
-        output_size = (width * height + 7) // 8
-        mono_buffer = bytearray(output_size)
-
-        for y in range(height):
-            for x in range(width):
-                # Get RGB565 pixel (16-bit)
-                pixel = rgb565_buffer[(y * width + x) * 2] | (
-                    rgb565_buffer[(y * width + x) * 2 + 1] << 8
-                )
-
-                # Extract RGB components
-                r = ((pixel >> 11) & 0x1F) << 3  # 5 bits to 8 bits
-                g = ((pixel >> 5) & 0x3F) << 2  # 6 bits to 8 bits
-                b = (pixel & 0x1F) << 3  # 5 bits to 8 bits
-
-                # Calculate luminance (using approximate weights)
-                luminance = (r * 299 + g * 587 + b * 114) // 1000
-
-                # Determine bit position
-                pixel_index = y * width + x
-                byte_index = pixel_index // 8
-                bit_index = 7 - (pixel_index % 8)  # HMSB: most significant bit first
-
-                # Set bit if luminance is above threshold
-                if luminance >= threshold:
-                    mono_buffer[byte_index] |= 1 << bit_index
-
-        return mono_buffer
-
-    def rgb565_to_mono_hlsb(
-        self, rgb565_buffer, width, height, x_off, y_off, threshold=128
-    ):
-        """
-        Convert RGB565 buffer to monochrome HLSB buffer using FrameBuffer and memoryview.
+        Convert RGB565 buffer to monochrome HLSB buffer using FrameBuffer
 
         Args:
             rgb565_buffer: Input buffer of 16-bit RGB565 pixels (bytearray or bytes)
@@ -155,68 +97,50 @@ class HwDisplayDriver:
             height: Image height in pixels
             threshold: Luminance threshold (0-255) for monochrome conversion
 
-        Returns:
-            framebuf.FrameBuffer: Monochrome HLSB buffer
         """
-        # Calculate output buffer size (1 bit per pixel, 8 pixels per byte)
-        # output_size = (width * height + 7) // 8
-        # mono_buffer = bytearray(output_size)
 
-        # Create FrameBuffer objects
-        rgb_fb = framebuf.FrameBuffer(rgb565_buffer, width, height, framebuf.RGB565)
-        # mono_fb = framebuf.FrameBuffer(mono_buffer, width, height, framebuf.MONO_HLSB)
+        # C optimized FrameBuffer functions
+        if hasattr(self._disp_buff, "resize"):
+            self._disp_buff.resize(width, height)
+            self.ssd.blit_mono(self._disp_buff, x_off, y_off, threshold)
 
-        # # Use memoryview for efficient buffer access
-        # rgb_mv = memoryview(rgb565_buffer)
+        else:
+            # This is not efficient due to memory allocation --> fragmentation
+            self._disp_buff = framebuf.FrameBuffer(
+                rgb565_buffer, width, height, framebuf.RGB565
+            )
 
-        for y in range(height):
-            for x in range(width):
-                # Get RGB565 pixel (16-bit) using FrameBuffer
-                # print(x, y)
-                pixel = rgb_fb.pixel(x, y)
+            for y in range(height):
+                for x in range(width):
+                    pixel = self._disp_buff.pixel(x, y)
+                    r = ((pixel >> 11) & 0x1F) << 3  # 5 bits to 8 bits
+                    g = ((pixel >> 5) & 0x3F) << 2  # 6 bits to 8 bits
+                    b = (pixel & 0x1F) << 3  # 5 bits to 8 bits
 
-                # Extract RGB components
-                r = ((pixel >> 11) & 0x1F) << 3  # 5 bits to 8 bits
-                g = ((pixel >> 5) & 0x3F) << 2  # 6 bits to 8 bits
-                b = (pixel & 0x1F) << 3  # 5 bits to 8 bits
-                # print(f"x:{x}, y:{y}, R:{r}, G:{g}, B:{b}")
+                    # Calculate luminance (using approximate weights)
+                    luminance = (r * 299 + g * 587 + b * 114) // 1000
+                    # if luminance > 0:
+                    #     print(f"x:{x}, y:{y}, R:{r}, G:{g}, B:{b}, L:{luminance}")
+                    # Set pixel in monochrome buffer (FrameBuffer handles HLSB packing)
+                    self.ssd.pixel(
+                        x + x_off, y + y_off, 1 if luminance >= threshold else 0
+                    )
 
-                # Calculate luminance (using approximate weights)
-                luminance = (r * 299 + g * 587 + b * 114) // 1000
-                # if luminance >= threshold:
-                #     print(x + x_off, y + y_off)
-                # Set pixel in monochrome buffer (FrameBuffer handles HLSB packing)
-                self.ssd.pixel(x + x_off, y + y_off, 1 if luminance >= threshold else 0)
-
-        # return mono_fb
-
-    def rgb565_to_mono_rot_90_hlsb(
+    def rgb565_to_mono_rot_90(
         self, rgb565_buffer, width, height, x_off, y_off, threshold=128
     ):
-        """
-        Convert RGB565 buffer to monochrome HLSB buffer using FrameBuffer and memoryview.
-
-        Args:
-            rgb565_buffer: Input buffer of 16-bit RGB565 pixels (bytearray or bytes)
-            width: Image width in pixels
-            height: Image height in pixels
-            threshold: Luminance threshold (0-255) for monochrome conversion
-
-        Returns:
-            framebuf.FrameBuffer: Monochrome HLSB buffer
-        """
-        # Calculate output buffer size (1 bit per pixel, 8 pixels per byte)
-        # output_size = (width * height + 7) // 8
-        # mono_buffer = bytearray(output_size)
-
         # Create FrameBuffer objects
-        rgb_fb = framebuf.FrameBuffer(rgb565_buffer, width, height, framebuf.RGB565)
+
+        # self._disp_buff.resize(width, height)
+        self._disp_buff = framebuf.FrameBuffer(
+            rgb565_buffer, width, height, framebuf.RGB565
+        )
         # Rotate the buffer: process each pixel
         for y in range(height):
             for x in range(width):
                 # Translate to new buffer center
 
-                pixel = rgb_fb.pixel(x, y)
+                pixel = self._disp_buff.pixel(x, y)
 
                 # Extract RGB components
                 r = ((pixel >> 11) & 0x1F) << 3  # 5 bits to 8 bits
@@ -249,9 +173,9 @@ class HwDisplayDriver:
             # if len(buff) != len(self.disp_mv):
             # print(f"[{x1,y1, w,h}, ")
             if self.vdisp:
-                self.rgb565_to_mono_rot_90_hlsb(buff, w, h, x1, y1, 120)
+                self.rgb565_to_mono_rot_90(buff, w, h, x1, y1, 120)
             else:
-                self.rgb565_to_mono_hlsb(buff, w, h, x1, y1, 120)
+                self.rgb565_to_mono(buff, w, h, x1, y1, 120)
             self.ssd.show()
         except Exception as e:
             sys.print_exception(e)
