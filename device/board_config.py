@@ -10,12 +10,14 @@ from pybbuzz import Buzzer
 
 
 class SoundDevice:
-    def __init__(self, buzz, mute=False):
+    def __init__(self, buzz, mute=False, fq=2500):
         self.sd = buzz
         self._mute = mute
+        self.fq = fq
 
-    def beep(self, sleeptime=50, ntimes=1, ntimespaced=50, fq=2500):
+    def beep(self, sleeptime=50, ntimes=1, ntimespaced=50):
         if not self._mute:
+            fq = self.fq
             self.sd.buzz_beep(sleeptime, ntimes, ntimespaced, fq)
 
     def mute(self, b=None):

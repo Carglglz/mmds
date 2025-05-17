@@ -130,6 +130,14 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
 
         wgroup.set_focus_cb(focus_cb)
 
+        @callback.value_changed(arc_setting)
+        def set_fq(event):
+            v = arc_setting.get_value()
+            fq = int(4400 * (v / 100))
+            if abs(fq - buzz.fq) > 200:
+                buzz.fq = fq
+                buzz.beep()
+
     # AIOREPL
     g = __import__("__main__").__dict__
     g.update(display=display, scr=scr, sb=sb, clock=clk, ts=ts, thm=thm, sd=buzz)
@@ -146,10 +154,15 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
             sb.batt.set_bvalue(100 - i)
             sb.wifi.set_wvalue(-i)
             sb.clock.set_text(clk.time())
-            arc_setting.set_mvalue(100 - i)
+            if menu._backmode:
+                if menu.btns[menu.selected] == menu.btn3:
+                    arc_setting.set_mvalue(100 - i)
 
-            thm.set_tvalue(int(tmp))
-            thm_lab.set_text(f"{tmp:.1f} C")
+                    arc_setting.send_event(lv.EVENT.VALUE_CHANGED, None)
+
+                if menu.btns[menu.selected] == menu.btn1:
+                    thm.set_tvalue(int(tmp))
+                    thm_lab.set_text(f"{tmp:.1f} C")
 
             plot.update(scale=10)
 

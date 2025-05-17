@@ -219,7 +219,7 @@ class Battery(lv.obj):
 
 
 class WifiInd(lv.obj):
-    def __init__(self, parent, w=18, h=18, scr=True):
+    def __init__(self, parent, w=20, h=20, scr=True):
         if scr:
             self.scr = MonoChromeScreen(parent)
             super().__init__(self.scr)
@@ -249,10 +249,10 @@ class WifiInd(lv.obj):
         self.l2.add_style(MonoWifiStyle(), lv.PART.MAIN)
         self.l2.add_style(MonoWifiIndStyle(), lv.PART.INDICATOR)
         self.l2.add_style(MonoWifiKnobStyle(), lv.PART.KNOB)
-        self.l2.set_size(w - 2, h - 2)
-        self.l2.align(lv.ALIGN.CENTER, 0, 6)
+        self.l2.set_size(w - 3, h - 3)
+        self.l2.align(lv.ALIGN.CENTER, 0, 5)
         self.l2.set_value(0)
-        self.l2.set_bg_angles(255, 285)
+        self.l2.set_bg_angles(245, 295)
         self.l2.set_mode(lv.arc.MODE.REVERSE)
 
         self.l3 = lv.arc(self)
@@ -261,7 +261,7 @@ class WifiInd(lv.obj):
         self.l3.add_style(MonoWifiIndStyle(), lv.PART.INDICATOR)
         self.l3.add_style(MonoWifiKnobStyle(), lv.PART.KNOB)
         self.l3.set_size(w - 2, h - 2)
-        self.l3.align(lv.ALIGN.CENTER, 0, 9)
+        self.l3.align(lv.ALIGN.CENTER, 0, 10)
         self.l3.set_value(0)
         self.l3.set_bg_angles(270, 272)
         self.l3.set_mode(lv.arc.MODE.REVERSE)

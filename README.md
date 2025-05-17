@@ -20,7 +20,7 @@ Software:
         - tests
 
 Hardware:
-    - Monochrome OLED diplay (128x64)
+    - Monochrome OLED display (128x64)
     - Potentiometer 
     - Button 
     - Temperature sensor
