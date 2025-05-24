@@ -1,0 +1,12 @@
+package(
+    "gui",
+    files=(
+        "callbacks.py",
+        "mgui.py",
+        "testdisplay.py",
+        "testrunner.py",
+        "ui/monoc.py",
+        "ui/style_monoc.py",
+    ),
+    base_path=".",
+)
