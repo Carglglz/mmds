@@ -183,7 +183,7 @@ class BatteryCap(lv.obj):
 
 
 class Battery(lv.obj):
-    def __init__(self, parent, w=18, h=10, scr=True):
+    def __init__(self, parent, w=18, h=10, vert=False, pct=False, scr=True):
         if w // h < 2:
             h = w // 2
         if scr:
@@ -193,29 +193,73 @@ class Battery(lv.obj):
             super().__init__(parent)
 
         self.add_style(BoxStyle(), lv.PART.MAIN)
+        self._vert = vert
 
-        self.set_size(w, h)
+        if pct:
+            self.bpct = lv.label(self)
+            self.bpct.set_text("100%")
+            self.bpct.set_style_text_color(lv.color_white(), 0)
+            if not vert:
+                self.bpct.align(lv.ALIGN.LEFT_MID, 2, 1)
+            else:
+                self.bpct.align(lv.ALIGN.CENTER, 4, 0)
+        if vert:
+            if pct:
+                # self.set_size(h + 2, w + 36)
+
+                self.set_size(w + 30, h + 8)
+            else:
+                # self.set_size(h, w - 2)
+
+                self.set_size(w, h + 8)
+            self.ind = BatteryBar(self, h, w - 4)
+            self.cap = BatteryCap(self, h=w // 14, w=h // 3)
+            self.cap.align(lv.ALIGN.TOP_MID, 0, 0)
+            # if pct:
+        else:
+            if pct:
+                self.set_size(w + 38, h + 2)
+            else:
+                self.set_size(w, h)
+
+            self.ind = BatteryBar(self, w - 2, h)
+
+            self.cap = BatteryCap(self, w=w // 14, h=h // 3)
+            self.cap.align(lv.ALIGN.RIGHT_MID, -1, 0)
         self.add_flag(lv.obj.FLAG.CLICKABLE)
 
         self.set_state(lv.STATE.CHECKED, False)
-
-        self.ind = BatteryBar(self, w - 2, h)
-
-        self.cap = BatteryCap(self, w=w // 14, h=h // 3)
-        self.cap.align(lv.ALIGN.RIGHT_MID, -1, 0)
 
         self.ind.set_value(60, False)
 
         self.ind.add_style(BarStyle(), lv.PART.MAIN)
         self.ind.add_style(BarIndStyle(), lv.PART.INDICATOR)
+        if pct:
+            if not vert:
+                self.ind.align(lv.ALIGN.RIGHT_MID, -2, 0)
+            else:
+                self.ind.align(lv.ALIGN.TOP_RIGHT, -2, 2)
 
-        self.ind.align(lv.ALIGN.LEFT_MID, 0, 0)
+                self.cap.align(lv.ALIGN.TOP_RIGHT, -h // 2, 1)
+        else:
+            if not vert:
+                self.ind.align(lv.ALIGN.LEFT_MID, 0, 0)
+            else:
+                self.ind.align(lv.ALIGN.TOP_RIGHT, -2, 2)
+
+                self.cap.align(lv.ALIGN.TOP_RIGHT, -h // 2, 1)
         # @callback.value_changed(self.ind)
         # def batt_val_update(event):
         #     self.ind.lab.set_text(str(self.ind.get_value()) + "%")
 
     def set_bvalue(self, val):
         self.ind.set_value(val, False)
+        if hasattr(self, "bpct"):
+            self.bpct.set_text(f"{val}%")
+            if not self._vert:
+                self.bpct.align(lv.ALIGN.LEFT_MID, (4 - len(f"{val}%")) * 3, 1)
+            else:
+                self.bpct.align(lv.ALIGN.LEFT_MID, (4 - len(f"{val}%")) * 3, 1)
 
 
 class WifiInd(lv.obj):
@@ -298,7 +342,7 @@ class StatusBar(lv.obj):
         )
         self.set_size(w, h)
         self.set_style_pad_column(2, 0)
-        self.set_style_pad_top(0, 0)
+        self.set_style_pad_top(1, 0)
         self.set_style_pad_right(1, 0)
         self.remove_flag(lv.obj.FLAG.SCROLLABLE)
         self.align(lv.ALIGN.TOP_MID, 0, 0)
@@ -308,7 +352,7 @@ class StatusBar(lv.obj):
         self.clock.add_style(LabelStyle(), lv.PART.MAIN)
         self.clock.set_style_text_font(lv.font_montserrat_14, lv.PART.MAIN)
         self.clock.set_text("00:00")
-        self.batt = Battery(self, scr=False)
+        self.batt = Battery(self, vert=False, pct=False, scr=False)
         self.wifi = WifiInd(self, scr=False)
 
         self.ble = lv.label(self)
