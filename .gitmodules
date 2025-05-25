@@ -5,4 +5,4 @@
 [submodule "user_modules/lv_binding_micropython"]
 	path = user_modules/lv_binding_micropython
 	url = https://github.com/Carglglz/lv_binding_micropython.git
-	branch = fix-soft-reset
+	branch = dev
