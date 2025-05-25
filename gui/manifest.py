@@ -8,5 +8,5 @@ package(
         "ui/monoc.py",
         "ui/style_monoc.py",
     ),
-    base_path=".",
+    base_path="..",
 )
