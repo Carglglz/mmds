@@ -141,8 +141,10 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
     # AIOREPL
     g = __import__("__main__").__dict__
     g.update(display=display, scr=scr, sb=sb, clock=clk, ts=ts, thm=thm, sd=buzz)
-
-    aiorepl_task = asyncio.create_task(aiorepl.task(g, shutdown_on_exit=False))
+    try:
+        aiorepl_task = asyncio.create_task(aiorepl.task(g, shutdown_on_exit=False))
+    except:
+        aiorepl_task = asyncio.create_task(aiorepl.task(g))
 
     print("OK")
     gc.collect()
