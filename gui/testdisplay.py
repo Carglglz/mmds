@@ -178,6 +178,10 @@ class TestDisplayDriver:
                 print(f"[RELEASED]: ({self._x},{self._y})")
             data.state = self._dstate
 
+    def screenshot(self, name="screenshot"):
+        if hasattr(self.display_drv, "screenshot"):
+            return self.display_drv.screenshot(name)
+
 
 class DummyDisplay:
     def __init__(self, width=240, height=320, color_format=lv.COLOR_FORMAT.RGB565):
@@ -189,7 +193,11 @@ class DummyDisplay:
         self.test_name = "testframe"
         self._header_set = False
         self._save_frame = sys.platform in ["darwin", "linux"]
+        # TODO: use framebuf for snapshot
         self._debug = True
+        if self._save_frame:
+            self._pbuff = bytearray(self.color_size)
+        self._save_frame = False
 
     @property
     def debug(self):
@@ -200,14 +208,49 @@ class DummyDisplay:
         self._debug = x
         self._save_frame = x
 
-    def save_frame(self, data):
+    def reverse_pixel(self, a):
+        for i in range(len(a) - 1, -1, -1):
+            self._pbuff[len(a) - 1 - i] = a[i]
+        return self._pbuff
+
+    def save_frame(self, data, w, h):
         if not self._header_set:
             self._header_set = True
             with open(f"{self.test_name}.bin", "wb") as fr:
                 fr.write(f"{self.width}:{self.height}:{self.color_size}\n".encode())
 
         with open(f"{self.test_name}.bin", "ab") as fr:
-            fr.write(data)
+            pi = 0
+            for py in range(0, h):
+                for px in range(0, w):
+                    try:
+                        pixel = data[pi : pi + self.color_size]
+
+                        fr.write(self.reverse_pixel(pixel))
+                        pi += self.color_size
+                    except Exception:
+                        print(pi)
+
+    async def screenshot(self, name="screenshot"):
+        _debug = self._debug
+        self._debug = False
+        self._save_frame = False
+
+        # Reset
+        self._rst_scr = lv.obj()
+        c_scr = lv.screen_active()
+        lv.screen_load(self._rst_scr)
+        await asyncio.sleep_ms(100)
+
+        # Load test screen
+        self._save_frame = sys.platform in ["darwin", "linux"]
+        self._header_set = False
+        self.test_name = f"{self.test_name}@{name}"
+        lv.screen_load(c_scr)
+        await asyncio.sleep_ms(100)
+
+        self._debug = _debug
+        self._save_frame = sys.platform in ["darwin", "linux"]
 
     def _shasum_frame(self, data):
         _hash = hashlib.sha256()
@@ -221,7 +264,7 @@ class DummyDisplay:
             print(f"\nFRAME: {self.n} {(x1, y1, w, h, len(buff[:]))}")
             print(self._shasum_frame(bytes(buff[:])))
         if self._save_frame:
-            self.save_frame(buff[:])
+            self.save_frame(buff[:], w, h)
         self.n += 1
 
 
