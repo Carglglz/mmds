@@ -22,31 +22,17 @@ jobs:
         lfs: true
         submodules: true
         set-safe-directory: true
-    - name: Install Dependencies
-      run: |
-        sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse"
-        sudo apt-get update -y -qq
-        sudo apt-get install libsdl2-dev parallel libfreetype-dev librlottie-dev libavformat-dev libavcodec-dev libswscale-dev libavutil-dev build-essential libc-bin
-        python3 -m pip install pillow
 
-
-    # - name: Initialize micropython submodule
-    #   run: git submodule update --init --recursive ./micropython
 
     - name: Initialize lv_binding_micropython submodule
       run: git submodule update --init --recursive ./user_modules/lv_binding_micropython
 
-
-    # - name: Debug GitHub Event 
-    #   run: -${{ tojson(github.event) }}
-    #   shell: cat {0}
-
-    # - name: Checkout commit
-    #   run: |
-
-    #     git fetch --force ${{ github.event.repository.html_url }} "+${{github.event.ref}}:refs/remotes/origin/${{github.event.head_commit.author.username}}-${{github.event.head_commit.id}}"
-    #     git checkout ${{ github.event.head_commit.id }}
-    #     git submodule update --init --recursive
+    - name: Install LVGL Dependencies
+      run: |
+        sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse"
+        sudo apt-get update -y -qq
+        sudo apt-get install libsdl2-dev parallel libfreetype-dev librlottie-dev libavformat-dev libavcodec-dev libswscale-dev libavutil-dev
+        python3 -m pip install pillow
 
     - name: Build mpy-cross
       working-directory: ./micropython
@@ -55,6 +41,10 @@ jobs:
     - name: Update Unix port submodules
       working-directory: ./micropython
       run: make -C ports/unix DEBUG=1 submodules
+
+    - name: Install MicroPython unix-build dependencies
+      working-directory: ./micropython
+      run: make -j $(nproc) -C ports/unix DEBUG=1 deplibs
 
     - name: Build the unix port
       working-directory: ./micropython

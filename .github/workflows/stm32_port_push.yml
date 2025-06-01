@@ -1,0 +1,50 @@
+name: Build MicroPython-LVGL stm32 port
+
+on:
+  push:
+
+jobs:
+  stm32-build:
+
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: Carglglz/mmds
+        ssh-strict: true
+        ssh-user: git
+        persist-credentials: true
+        clean: true
+        sparse-checkout-cone-mode: true
+        fetch-depth: 10
+        fetch-tags: true
+        show-progress: true
+        lfs: true
+        submodules: true
+        set-safe-directory: true
+
+    - name: Initialize lv_binding_micropython submodule
+      run: git submodule update --init --recursive ./user_modules/lv_binding_micropython
+
+    - name: Install LVGL Dependencies
+      run: |
+        sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu `lsb_release -sc` main universe restricted multiverse"
+        sudo apt-get update -y -qq
+        sudo apt-get install libsdl2-dev parallel libfreetype-dev librlottie-dev libavformat-dev libavcodec-dev libswscale-dev libavutil-dev
+
+    - name: Build mpy-cross
+      working-directory: ./micropython
+      run: make -j $(nproc) -C mpy-cross
+
+    - name: Update stm32 port submodules
+      working-directory: ./micropython
+      run: make -C ports/stm32 DEBUG=1 submodules
+
+    - name: Install MicroPython stm32-build dependencies
+      working-directory: ./micropython
+      run: source tools/ci.sh && ci_stm32_setup
+
+
+    - name: Build stm32 port
+      working-directory: ./micropython
+      run: make -j $(nproc) -C ports/stm32 BOARD_DIR=../../../ports/stm32/boards/PYBOARD-LVGL
