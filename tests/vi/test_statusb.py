@@ -10,16 +10,15 @@ try:
 
 except ImportError:
     # running from micropython test suite
-    root_testdir = sys.path[0].rsplit("/", 1)[0]
-    sys.path.append(f"{root_testdir}/gui")
+    root_testdir = sys.path[0].rsplit("/", 2)[0]
+    sys.path.append(f"{root_testdir}")
     sys.path.append(f"{root_testdir}/displays/sim")
 
 
-import testrunner
-
-from ui.monoc import StatusBar
+from gui import testrunner
+from gui.ui.monoc import StatusBar
 import time
-from mgui import Clock
+from gui.mgui import Clock
 
 # This is a status bar test
 

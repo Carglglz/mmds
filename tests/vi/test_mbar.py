@@ -10,21 +10,23 @@ try:
 
 except ImportError:
     # running from micropython test suite
-    root_testdir = sys.path[0].rsplit("/", 1)[0]
-    sys.path.append(f"{root_testdir}/gui")
+    root_testdir = sys.path[0].rsplit("/", 2)[0]
+    sys.path.append(f"{root_testdir}")
     sys.path.append(f"{root_testdir}/displays/sim")
 
-import testrunner
-from ui.monoc import Marc
 
-# This is a basic arc test
+from gui import testrunner
+from gui.ui.monoc import Mbar
+import lvgl as lv
+
+# This is a basic bar test
 
 
 async def test(scr, display=None):
-    mbar = Marc(scr, scr=False)
+    mbar = Mbar(scr, w=lv.pct(60), scr=False)
 
     await asyncio.sleep_ms(500)  # await so the frame can be rendered
-    print("MONO ARC TEST:")
+    print("MONO BAR TEST:")
     i = 0
     while True:
         i += 1

@@ -1,7 +1,6 @@
 # boot.py -- run on boot to configure USB and filesystem
 # Put app code in main.py
 
-import machine
 import pyb
 import sys
 import os
@@ -14,4 +13,5 @@ pyb.usb_mode("VCP")  # act as a serial and a storage device
 # network.hostname('...') # DHCP/mDNS hostname
 
 
-sys.path.append(f"{os.getcwd()}/gui")
+# sys.path.append(f"{os.getcwd()}/gui")
+sys.path.append(f"{os.getcwd()}/display")

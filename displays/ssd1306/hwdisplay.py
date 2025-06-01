@@ -62,6 +62,7 @@ class HwDisplayDriver:
         self.vdisp = width < height
         self.ssd.rotate(True)
         self._disp_buff = None
+        self.indev_type = lv.INDEV_TYPE.ENCODER
 
     @property
     def debug(self):

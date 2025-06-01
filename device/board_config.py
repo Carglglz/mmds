@@ -1,7 +1,13 @@
 import sys
 import os
 
-sys.path.append(f"{os.getcwd()}/gui")
+# sys.path is = ['', '.frozen']
+
+# To run from frozen:
+
+# sys.path[0], sys.path[1] = sys.path[1], sys.path[0]
+
+# sys.path.append(f"{os.getcwd()}/gui")
 sys.path.append(f"{os.getcwd()}/display")
 sys.path.append(f"{os.getcwd()}/audio")
 

@@ -2,13 +2,13 @@ import sys
 import asyncio
 
 
-import testrunner
+from . import testrunner
 
-from ui.monoc import StatusBar, Thermometer, MMenu, MChart, Mlabel, Marc  # noqa
+from .ui.monoc import StatusBar, Thermometer, MMenu, MChart, Mlabel, Marc  # noqa
 import aiorepl
 import time
 import lvgl as lv  # noqa
-from callbacks import callback
+from .callbacks import callback
 import gc
 
 
@@ -120,7 +120,7 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
     wgroup.add_obj(menu.btn1)
     wgroup.add_obj(menu.btn2)
     wgroup.add_obj(menu.btn3)
-    display.indev_test.set_group(wgroup)
+    display.indev.set_group(wgroup)
 
     if buzz:
 

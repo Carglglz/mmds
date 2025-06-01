@@ -1,6 +1,6 @@
 import lvgl as lv
-from ui.style_monoc import *
-from callbacks import callback
+from .style_monoc import *
+from ..callbacks import callback
 
 
 class MonoChromeScreen(lv.obj):

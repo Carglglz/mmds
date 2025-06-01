@@ -4,8 +4,20 @@ import board_config
 
 # gui
 
-import mgui
+from gui import mgui
 
 # gc.collect()
+
+import sys
+
+# debug path modules, check if running from fs " " or frozen ".frozen"
+for name, mod in sys.modules.items():
+    if hasattr(mod, "__file__"):
+        # Is a file
+        print(f"- mod: {name} from {mod.__file__}")
+    elif hasattr(mod, "__path__"):
+        # Is a package
+        print(f"- package: {name} from {mod.__path__}")
+
 
 mgui.run(**board_config.conf)

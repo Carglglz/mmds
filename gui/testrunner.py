@@ -4,7 +4,13 @@ import os
 sys.path.append("..")
 sys.path.append(os.getcwd())
 
-from testdisplay import get_display, display_config  # noqa
+try:
+    # testrunner, testdisplay from package
+    from .testdisplay import get_display, display_config  # noqa
+except ImportError:
+    # testrunner, testdisplay from root dir
+    from testdisplay import get_display, display_config  # noqa
+
 
 _int = sys.argv.pop() if sys.platform in ["darwin", "linux"] else ""
 _mode = "sim"
@@ -33,14 +39,20 @@ def run(func, filename, disp_config=display_config, **kwargs):
     # micropython.mem_info()
 
     async def _run(func, disp_config=disp_config, **kwargs):
+        # OVERRIDE if display_config.py hasattr, else use default
+        # display_config
         if hasattr(disp_config, "COLOR_FORMAT"):
             display_config.COLOR_FORMAT = disp_config.COLOR_FORMAT
+
+        if hasattr(disp_config, "SHOW_INFO"):
+            display_config.SHOW_INFO = disp_config.SHOW_INFO
         display = get_display(
             disp_config.WIDTH,
             disp_config.HEIGHT,
             mode=disp_config.MODE if disp_config.MODE is not None else _mode,
             pointer=disp_config.POINTER,
             color_format=display_config.COLOR_FORMAT,
+            show_display_info=display_config.SHOW_INFO,
         )
 
         if display.mode == "sim":

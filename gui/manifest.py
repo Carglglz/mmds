@@ -7,6 +7,8 @@ package(
         "testrunner.py",
         "ui/monoc.py",
         "ui/style_monoc.py",
+        "ui/__init__.py",
+        "__init__.py",
     ),
     base_path="..",
 )

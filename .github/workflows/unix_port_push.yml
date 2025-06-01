@@ -55,16 +55,16 @@ jobs:
       working-directory: ./micropython
       run: MICROPY_MICROPYTHON=ports/unix/build-UNIX-LVGL/micropython ./tests/run-tests.py -d tests/basics
 
-    - name: Run MicroPython-LVGL API Tests
+    - name: Run mmds mono API Tests
       working-directory: ./micropython
-      run: MICROPY_MICROPYTHON=ports/unix/build-UNIX-LVGL/micropython ./tests/run-tests.py -d ../user_modules/lv_binding_micropython/tests/api
+      run: MICROPY_MICROPYTHON=ports/unix/build-UNIX-LVGL/micropython ./tests/run-tests.py -d ../tests/ci
 
-    - name: Process Tests Artifacts
-      working-directory: ./user_modules/lv_binding_micropython/tests
-      run: ./imageconvert.py api/*.bin
+    - name: Process mmds Tests Artifacts
+      working-directory: ./tests
+      run: ./imageconvert.py ci/*.bin
     
-    - name: Upload Test Artifacts
+    - name: Upload mmds Test Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: API Tests Screenshots
-        path: ./user_modules/lv_binding_micropython/tests/api/*.png 
+        name: mono API Tests Screenshots
+        path: ./tests/ci/*.png 
