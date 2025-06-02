@@ -1,13 +1,28 @@
-name: Build MicroPython-LVGL unix port
+name: MicroPython-LVGL CI
 
 on:
   push:
+  pull_request:
+
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }} 
+  cancel-in-progress: true
 
 jobs:
-  unix-build:
+  build-lvgl-micropython:
 
     runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      matrix:
+        port: ['unix', 'stm32']
     steps:
+    - uses: ammaraskar/gcc-problem-matcher@master
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
     - uses: actions/checkout@v4
       with:
         repository: Carglglz/mmds
@@ -38,32 +53,48 @@ jobs:
       working-directory: ./micropython
       run: make -j $(nproc) -C mpy-cross
 
-    - name: Update Unix port submodules
+    - name: Update ${{ matrix.port }} port submodules
       working-directory: ./micropython
-      run: make -C ports/unix DEBUG=1 submodules
+      run: make -C ports/${{ matrix.port}} DEBUG=1 submodules
 
-    - name: Install MicroPython unix-build dependencies
+    - name: Install MicroPython unix dependencies
+      if: matrix.port == 'unix'
       working-directory: ./micropython
       run: make -j $(nproc) -C ports/unix DEBUG=1 deplibs
 
-    - name: Build the unix port
+    - name: Build unix port
+      if: matrix.port == 'unix'
       working-directory: ./micropython
       run: make -j $(nproc) -C ports/unix VARIANT_DIR=../../../ports/unix/variants/UNIX-LVGL
 
-    - name: Run MicroPython Tests
 
+    - name: Install MicroPython stm32 dependencies
+      if: matrix.port == 'stm32'
+      working-directory: ./micropython
+      run: source tools/ci.sh && ci_stm32_setup
+
+    - name: Build stm32 port
+      if: matrix.port == 'stm32'
+      working-directory: ./micropython
+      run: make -j $(nproc) -C ports/stm32 BOARD_DIR=../../../ports/stm32/boards/PYBOARD-LVGL
+
+    - name: Run MicroPython Tests
+      if: matrix.port == 'unix'
       working-directory: ./micropython
       run: MICROPY_MICROPYTHON=ports/unix/build-UNIX-LVGL/micropython ./tests/run-tests.py -d tests/basics
 
     - name: Run mmds mono API Tests
+      if: matrix.port == 'unix'
       working-directory: ./micropython
       run: MICROPY_MICROPYTHON=ports/unix/build-UNIX-LVGL/micropython ./tests/run-tests.py -d ../tests/ci
 
     - name: Process mmds Tests Artifacts
+      if: matrix.port == 'unix'
       working-directory: ./tests
       run: ./imageconvert.py ci/*.bin
     
     - name: Upload mmds Test Artifacts
+      if: matrix.port == 'unix'
       uses: actions/upload-artifact@v4
       with:
         name: mono API Tests Screenshots

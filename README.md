@@ -1,4 +1,4 @@
-
+[![mmds](https://github.com/Carglglz/mmds/actions/workflows/mmds_ci.yml/badge.svg)](https://github.com/Carglglz/mmds/actions/workflows/mmds_ci.yml)
 ## mmds
 
 
