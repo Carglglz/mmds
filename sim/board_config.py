@@ -3,7 +3,10 @@ import os
 import random
 
 
-sys.path.append(f"{os.getcwd()}/gui")
+# sys.path is = ['', '.frozen'] by default so
+# To run from frozen: # uncomment
+# sys.path[0], sys.path[1] = sys.path[1], sys.path[0]
+
 sys.path.append(f"{os.getcwd()}/display")
 
 
