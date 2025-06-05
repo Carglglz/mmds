@@ -1,0 +1,21 @@
+DISPLAY_MODE: INTERACTIVE
+INDEV_MODE: SIM
+COLOR_FORMAT: RGB565
+DISPLAY_SIZE: 128 x 64
+MONO GUI TEST:
+MONO GUI MENU
+MONO GUI THERMOMETER
+btn  pressed
+btn  pressed
+btn  released
+back
+MONO GUI CHART
+btn  pressed
+btn  pressed
+btn  released
+back
+MONO GUI SETTINGS
+btn  pressed
+btn  pressed
+btn  released
+back
