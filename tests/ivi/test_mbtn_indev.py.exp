@@ -1,0 +1,12 @@
+DISPLAY_MODE: INTERACTIVE
+INDEV_MODE: ENCODER
+COLOR_FORMAT: RGB565
+DISPLAY_SIZE: 128 x 64
+MONO BUTTON TEST:
+btn Test pressed
+btn Test released
+btn Test pressed
+btn Test released
+btn Test pressed
+btn Test released
+OK

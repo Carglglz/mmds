@@ -24,26 +24,18 @@ from gui.ui.monoc import Mbutton
 async def test(scr, display=None):
     mbtn = Mbutton(scr, scr=False, pc=True, focus=True)
 
-    # wgroup = lv.group_create()
-    # wgroup.add_obj(mbtn)
-    # display.indev.set_group(wgroup)
+    wgroup = lv.group_create()
+    wgroup.add_obj(mbtn)
+    display.indev.set_group(wgroup)
 
     await asyncio.sleep_ms(500)  # await so the frame can be rendered
     print("MONO BUTTON TEST:")
     while True:
+        await asyncio.sleep_ms(200)
         if mbtn._np >= 3:
             await asyncio.sleep_ms(200)
             print("OK")
             break
-
-        mbtn.send_event(lv.EVENT.FOCUSED, None)
-        mbtn.send_event(lv.EVENT.PRESSED, None)
-        await asyncio.sleep_ms(100)
-
-        mbtn.send_event(lv.EVENT.RELEASED, None)
-        # mbtn.send_event(lv.EVENT.DEFOCUSED, None)
-
-        await asyncio.sleep_ms(1000)
 
 
 __file__ = globals().get("__file__", "test")
