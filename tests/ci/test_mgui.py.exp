@@ -1,0 +1,25 @@
+DISPLAY_MODE: SIM
+INDEV_MODE: SIM
+COLOR_FORMAT: RGB888
+DISPLAY_SIZE: 128 x 64
+MONO GUI TEST:
+MONO GUI MENU
+SCREENSHOT @ test_gui@menu
+MONO GUI THERMOMETER
+btn  pressed
+btn  pressed
+btn  released
+SCREENSHOT @ test_gui@Thermometer
+back
+MONO GUI CHART
+btn  pressed
+btn  pressed
+btn  released
+SCREENSHOT @ test_gui@Chart
+back
+MONO GUI SETTINGS
+btn  pressed
+btn  pressed
+btn  released
+SCREENSHOT @ test_gui@Settings
+back

@@ -57,7 +57,7 @@ def run(func, filename, disp_config=display_config, **kwargs):
 
         if display.mode == "sim":
             display.set_test_name(f"{filename.replace('.py', '')}.{func.__name__}")
-            await run_test(func, display)
+            await run_test(func, display, **kwargs)
             await asyncio.sleep_ms(100)
         elif display.mode == "interactive":
             await run_test(func, display, **kwargs)
