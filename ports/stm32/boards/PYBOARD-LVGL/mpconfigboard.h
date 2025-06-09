@@ -117,5 +117,5 @@
 /* #define MICROPY_DEBUG_PRINTERS   (1) */
  /* #define MICROPY_PROF_INSTR_DEBUG_PRINT_ENABLE (1) */ 
 
-#include "lv_conf_pyb.h"
+#include "lv_conf_v9_3_pyb.h"
 

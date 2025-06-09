@@ -38,5 +38,5 @@ FROZEN_MANIFEST ?= $(BOARD_DIR)/manifest.py
 
 USER_C_MODULES ?= ../../../user_modules
 
-LV_CONF_PATH ?= $(BOARD_DIR)/lv_conf_pyb.h
+LV_CONF_PATH ?= $(BOARD_DIR)/lv_conf_v9_3_pyb.h
 
