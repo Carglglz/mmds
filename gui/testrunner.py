@@ -46,13 +46,21 @@ def run(func, filename, disp_config=display_config, **kwargs):
 
         if hasattr(disp_config, "SHOW_INFO"):
             display_config.SHOW_INFO = disp_config.SHOW_INFO
+
+        if hasattr(disp_config, "RENDER_MODE"):
+            display_config.RENDER_MODE = disp_config.RENDER_MODE
+
+        if hasattr(disp_config, "WINDOW_POS"):
+            display_config.WINDOW_POS = disp_config.WINDOW_POS
         display = get_display(
             disp_config.WIDTH,
             disp_config.HEIGHT,
             mode=disp_config.MODE if disp_config.MODE is not None else _mode,
             pointer=disp_config.POINTER,
             color_format=display_config.COLOR_FORMAT,
+            render_mode=display_config.RENDER_MODE,
             show_display_info=display_config.SHOW_INFO,
+            window_pos=display_config.WINDOW_POS,
         )
 
         if display.mode == "sim":

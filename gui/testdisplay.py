@@ -15,7 +15,9 @@ class TestDisplayConfig:
     MODE = "sim"
     POINTER = "sim"
     COLOR_FORMAT = lv.COLOR_FORMAT.RGB888
+    RENDER_MODE = lv.DISPLAY_RENDER_MODE.PARTIAL
     SHOW_INFO = True
+    WINDOW_POS = (None, None)
 
 
 class TestDisplayDriver:
@@ -27,6 +29,7 @@ class TestDisplayDriver:
         color_format=lv.COLOR_FORMAT.RGB565,
         mode="sim",
         pointer="sim",
+        render_mode=lv.DISPLAY_RENDER_MODE.PARTIAL,
         fps=25,
     ):
         self.display_drv = display_drv
@@ -41,8 +44,6 @@ class TestDisplayDriver:
         self._debug_press = True
         self._debug_release = True
         self.mode = mode
-
-        render_mode = lv.DISPLAY_RENDER_MODE.PARTIAL
 
         if not lv_utils.event_loop.is_running():
             self.event_loop = lv_utils.event_loop(freq=fps, asynchronous=True)
@@ -97,6 +98,13 @@ class TestDisplayDriver:
                 display_drv.width, display_drv.height
             )
             lv.sdl_window_set_title(self.lv_display_int, "MicroPython-LVGL")
+            if hasattr(display_drv, "window_pos"):
+                if any(display_drv.window_pos):
+                    lv.sdl_window_set_position(
+                        self.lv_display_int, *display_drv.window_pos
+                    )
+                lv.sdl_window_set_opacity(self.lv_display_int, 1.0)
+                lv.sdl_window_set_bordered(self.lv_display_int, 1)
             self.mouse = lv.sdl_mouse_create()
             self.keyboard = lv.sdl_keyboard_create()
             self.keyboard.set_group(self.group)
@@ -303,6 +311,8 @@ def get_display(
     mode="sim",
     pointer="sim",
     show_display_info=False,
+    render_mode=lv.DISPLAY_RENDER_MODE.PARTIAL,
+    window_pos=(None, None),
 ):
     print(f"DISPLAY_MODE: {mode.upper()}")
     print(f"INDEV_MODE: {pointer.upper()}")
@@ -324,6 +334,8 @@ def get_display(
         except Exception as e:
             if sys.platform not in ["darwin", "linux"]:
                 sys.print_exception(e)
+            else:
+                disp.window_pos = window_pos
     assert hasattr(disp, "width") is True, "expected width attribute in display driver"
     assert hasattr(disp, "height") is True, (
         "expected height attribute in display driver"
@@ -340,11 +352,23 @@ def get_display(
 
     alloc_buffer = lambda buffersize: memoryview(bytearray(buffer_size))
 
-    factor = 10  ### Must be 1 if using an RGBBus
+    if render_mode == lv.DISPLAY_RENDER_MODE.PARTIAL:
+        factor = 10  ### Must be 1 if using an RGBBus
+    else:
+        factor = 1
+
     double_buf = False  ### Must be False if using an RGBBus
 
-    buffer_size = disp.width * disp.height * (disp.color_depth // 8) // factor
+    buffer_size = (
+        disp.width * disp.height * (lv.color_format_get_size(color_format)) // factor
+    )
+    if color_format == lv.COLOR_FORMAT.I1:
+        buffer_size //= 8
+        # see https://docs.lvgl.io/master/details/main-modules/display/color_format.html#monochrome-displays
+        buffer_size += 8
 
     fbuf1 = alloc_buffer(buffer_size)
     fbuf2 = alloc_buffer(buffer_size) if double_buf else None
-    return TestDisplayDriver(disp, fbuf1, fbuf2, color_format, mode, pointer)
+    return TestDisplayDriver(
+        disp, fbuf1, fbuf2, color_format, mode, pointer, render_mode
+    )
