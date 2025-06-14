@@ -47,6 +47,7 @@ class HwDisplayDriver:
     def __init__(self, width=128, height=64, color_format=lv.COLOR_FORMAT.RGB565):
         self.width = width
         self.height = height
+        self.color_format = color_format
         self.color_depth = lv.color_format_get_bpp(color_format)
         self.color_size = lv.color_format_get_size(color_format)
         self.devices = [Device()]
@@ -63,6 +64,10 @@ class HwDisplayDriver:
         self.ssd.rotate(True)
         self._disp_buff = None
         self.indev_type = lv.INDEV_TYPE.ENCODER
+        if color_format == lv.COLOR_FORMAT.RGB565:
+            self.blit = self.blit_rgb565
+        else:
+            self.blit = self.blit_mono
 
     @property
     def debug(self):
@@ -73,9 +78,20 @@ class HwDisplayDriver:
         self._debug = x
 
     def set_frame_buffer(self, fb):
-        self._disp_buff = framebuf.FrameBuffer(
-            fb, self.width, self.height // 10, framebuf.RGB565
-        )
+        if self.color_format == lv.COLOR_FORMAT.RGB565:
+            self._disp_buff = framebuf.FrameBuffer(
+                fb, self.width, self.height // 10, framebuf.RGB565
+            )
+        elif self.color_format == lv.COLOR_FORMAT.I1:
+            # self._disp_buff = fb
+            # self._out_buff = bytearray(len(fb[8:]))
+
+            self._fbuff_in = framebuf.FrameBuffer(
+                fb[8:], self.width, self.height, framebuf.MONO_HLSB
+            )
+            # self._fbuff_out = framebuf.FrameBuffer(
+            #     self._out_buff, self.width, self.height, framebuf.MONO_VLSB
+            # )
 
     def splash(self):
         self.ssd.fill(0)
@@ -88,9 +104,9 @@ class HwDisplayDriver:
         self.ssd.text("MicroPython", 22, 56, 1)
         self.ssd.show()
 
-    def rgb565_to_mono(self, rgb565_buffer, width, height, x_off, y_off, threshold=128):
+    def rgb565_to_mono(self, rgb565_buffer, width, height, x_off, y_off, threshold=127):
         """
-        Convert RGB565 buffer to monochrome HLSB buffer using FrameBuffer
+        Convert RGB565 buffer to monochrome buffer using FrameBuffer
 
         Args:
             rgb565_buffer: Input buffer of 16-bit RGB565 pixels (bytearray or bytes)
@@ -169,17 +185,21 @@ class HwDisplayDriver:
         _y = x
         return _x, _y
 
-    def blit(self, x1, y1, w, h, buff):
+    def blit_rgb565(self, x1, y1, w, h, buff):
         try:
             # if len(buff) != len(self.disp_mv):
             # print(f"[{x1,y1, w,h}, ")
             if self.vdisp:
                 self.rgb565_to_mono_rot_90(buff, w, h, x1, y1, 120)
             else:
-                self.rgb565_to_mono(buff, w, h, x1, y1, 120)
+                self.rgb565_to_mono(buff, w, h, x1, y1, 127)
             self.ssd.show()
         except Exception as e:
             sys.print_exception(e)
+
+    def blit_mono(self, x1, y1, w, h, buff):
+        self.ssd.blit(self._fbuff_in, 0, 0)
+        self.ssd.show()
 
     def read_cb(self, indev, data):
         try:
