@@ -104,7 +104,7 @@ class HwDisplayDriver:
         self.ssd.text("MicroPython", 22, 56, 1)
         self.ssd.show()
 
-    def rgb565_to_mono(self, rgb565_buffer, width, height, x_off, y_off, threshold=127):
+    def rgb565_to_mono(self, rgb565_buffer, width, height, x_off, y_off):
         """
         Convert RGB565 buffer to monochrome buffer using FrameBuffer
 
@@ -112,14 +112,13 @@ class HwDisplayDriver:
             rgb565_buffer: Input buffer of 16-bit RGB565 pixels (bytearray or bytes)
             width: Image width in pixels
             height: Image height in pixels
-            threshold: Luminance threshold (0-255) for monochrome conversion
 
         """
 
         # C optimized FrameBuffer functions
         if hasattr(self._disp_buff, "resize"):
             self._disp_buff.resize(width, height)
-            self.ssd.blit_mono(self._disp_buff, x_off, y_off, threshold)
+            self.ssd.blit(self._disp_buff, x_off, y_off)
 
         else:
             # This is not efficient due to memory allocation --> fragmentation
@@ -192,7 +191,7 @@ class HwDisplayDriver:
             if self.vdisp:
                 self.rgb565_to_mono_rot_90(buff, w, h, x1, y1, 120)
             else:
-                self.rgb565_to_mono(buff, w, h, x1, y1, 127)
+                self.rgb565_to_mono(buff, w, h, x1, y1)
             self.ssd.show()
         except Exception as e:
             sys.print_exception(e)
