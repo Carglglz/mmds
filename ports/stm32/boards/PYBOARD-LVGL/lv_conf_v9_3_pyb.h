@@ -164,7 +164,7 @@
 
     /* The threshold of the luminance to consider a pixel as
      * active in indexed color format */
-    #define LV_DRAW_SW_I1_LUM_THRESHOLD 127
+    #define LV_DRAW_SW_I1_LUM_THRESHOLD 126
 
     /** Set number of draw units.
      *  - > 1 requires operating system to be enabled in `LV_USE_OS`.

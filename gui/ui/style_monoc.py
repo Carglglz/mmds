@@ -206,14 +206,14 @@ class BarStyle(lv.style_t):
         self.set_border_width(1)
         self.set_border_color(lv.color_make(255, 255, 255))
 
-        self.set_outline_width(1)
+        self.set_outline_width(0)
 
         self.set_shadow_width(0)
         self.set_shadow_offset_x(0)
         self.set_shadow_offset_y(0)
 
-        self.set_bg_color(lv.color_make(20, 20, 20))
-        self.set_bg_opa(0)
+        self.set_bg_color(lv.color_make(0, 0, 0))
+        self.set_bg_opa(lv.OPA.COVER)
 
         self.set_align(lv.ALIGN.CENTER)
 

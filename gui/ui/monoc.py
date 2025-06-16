@@ -233,6 +233,7 @@ class Battery(lv.obj):
         self.ind.set_value(60, False)
 
         self.ind.add_style(BarStyle(), lv.PART.MAIN)
+
         self.ind.add_style(BarIndStyle(), lv.PART.INDICATOR)
         if pct:
             if not vert:

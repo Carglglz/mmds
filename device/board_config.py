@@ -33,7 +33,7 @@ class SoundDevice:
 
 adc = pyb.ADC(pyb.Pin.board.X19)
 stemp = pyb.ADC(pyb.Pin.board.Y11)
-dt = 20
+dt = 100
 bz = SoundDevice(Buzzer("X1"))
 bz.beep()
 
