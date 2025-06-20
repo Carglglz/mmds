@@ -2,7 +2,7 @@
 ## mmds
 
 
-Minimal Monochrome Display System using MicroPython - LVGL + OLED display
+Minimal MicroPython Display System using MicroPython - LVGL + OLED monochrome display
 
 
 Explore GUI development on device with a set of minimal requirements (software and hardware)

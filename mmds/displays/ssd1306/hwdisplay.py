@@ -197,6 +197,7 @@ class HwDisplayDriver:
             sys.print_exception(e)
 
     def blit_mono(self, x1, y1, w, h, buff):
+        # FIXME: move ssd.show to final flush if using partial/direct render
         self.ssd.blit(self._fbuff_in, 0, 0)
         self.ssd.show()
 

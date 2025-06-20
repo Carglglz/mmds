@@ -176,6 +176,8 @@ class TestDisplayDriver:
             color_p.__dereference__(width * height * self._color_size),
         )
         self.lv_display.flush_ready()
+        # FIXME: check if last in partial/direct render and call display.drv
+        # show
 
     def _read_cb(self, indev, data):
         if self._press_event:
