@@ -65,6 +65,11 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
         time.sleep(2)
         lv.screen_load(scr)
 
+    # _font = "intersb24.bin"
+    # with open(f"../fonts/{_font}", "rb") as fb:
+    #     font_data = fb.read()
+    # font = lv.binfont_create_from_buffer(font_data, len(font_data))
+
     # TEMP SENSOR
     ts = TMP36(temp)
 
@@ -73,6 +78,7 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
 
     # CLOCK
     clk = Clock()
+    # sb.clock.set_style_text_font(font, 0)
 
     # APPS
     # THERMOMETER
@@ -81,6 +87,7 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
     thm_lab = lv.label(scr)
     thm_lab.set_style_text_color(lv.color_white(), 0)
     thm_lab.set_style_text_font(lv.font_montserrat_24, 0)
+    # thm_lab.set_style_text_font(font, 0)
     thm_lab.align(lv.ALIGN.CENTER, 10, 0)
     thm.add_flag(lv.obj.FLAG.HIDDEN)
     thm_lab.add_flag(lv.obj.FLAG.HIDDEN)

@@ -5,4 +5,4 @@ require("aiorepl")
 include("$(MPY_DIR)/../user_modules/lv_binding_micropython/ports/stm32")
 
 # GUI
-include("$(MPY_DIR)/../../mmds/gui")
+include("$(MPY_DIR)/../../mmds")
