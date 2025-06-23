@@ -877,7 +877,7 @@ extern void mp_deinit_lvgl_mod();
 #endif
 
 /** API for memory-mapped file access. */
-#define LV_USE_FS_MEMFS 0
+#define LV_USE_FS_MEMFS 1
 #if LV_USE_FS_MEMFS
     #define LV_FS_MEMFS_LETTER 'M'     /**< Set an upper-case driver-identifier letter for this driver (e.g. 'A'). */
 #endif

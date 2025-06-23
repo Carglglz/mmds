@@ -15,9 +15,14 @@ except ImportError:
     sys.path.append(f"{root_testdir}/displays/sim")
 
 # print(sys.path)
+if sys.platform in ["darwin", "linux"]:
+    fontdir = "../fonts/"
 
-TEXT = sys.argv[-1]
-if TEXT and TEXT.endswith(".py"):
+    TEXT = sys.argv[-1]
+    if TEXT and TEXT.endswith(".py"):
+        TEXT = "42"
+else:
+    fontdir = ""
     TEXT = "42"
 
 from gui import testrunner
@@ -32,11 +37,11 @@ async def test(scr, display=None):
     l_sz14 = Mlabel(scr, text=text, scr=False)
     l_sz14.align(lv.ALIGN.CENTER, 0, 0)
 
-    print("MONO LABEL TEST:")
+    print("MONO FONT TEST:")
 
-    for _font in [f for f in sorted(os.listdir("../fonts")) if f.endswith(".bin")]:
-        print(f"- {_font}")
-        with open(f"../fonts/{_font}", "rb") as fb:
+    for _font in [f for f in sorted(os.listdir(fontdir)) if f.endswith(".bin")]:
+        # print(f"- {_font}")
+        with open(f"{fontdir}{_font}", "rb") as fb:
             font_data = fb.read()
         font = lv.binfont_create_from_buffer(font_data, len(font_data))
 
