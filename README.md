@@ -8,11 +8,9 @@ Minimal MicroPython Display System using MicroPython - LVGL + OLED monochrome di
 Explore GUI development on device with a set of minimal requirements (software and hardware)
 
 
-<center>
-
-<img src="docs/img/thermometer.png" width="240" height="204">
-
-</center>
+<div align="center">
+  <img src="docs/img/thermometer.png" width="240" height="204">
+</div>
 
 Software:
     - MicroPython 
