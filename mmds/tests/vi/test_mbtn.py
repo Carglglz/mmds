@@ -24,6 +24,7 @@ from gui.ui.monoc import Mbutton
 async def test(scr, display=None):
     mbtn = Mbutton(scr, scr=False, pc=True, focus=True)
 
+    mbtn.send_event(lv.EVENT.FOCUSED, None)
     # wgroup = lv.group_create()
     # wgroup.add_obj(mbtn)
     # display.indev.set_group(wgroup)

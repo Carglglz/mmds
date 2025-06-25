@@ -67,7 +67,11 @@ class HwDisplayDriver:
         if color_format == lv.COLOR_FORMAT.RGB565:
             self.blit = self.blit_rgb565
         else:
-            self.blit = self.blit_mono
+            if display_config.RENDER_MODE == lv.DISPLAY_RENDER_MODE.PARTIAL:
+                self.blit = self.blit_mono_partial
+            else:
+                self.blit = self.blit_mono_full
+        self._display = None
 
     @property
     def debug(self):
@@ -82,16 +86,15 @@ class HwDisplayDriver:
             self._disp_buff = framebuf.FrameBuffer(
                 fb, self.width, self.height // 10, framebuf.RGB565
             )
-        elif self.color_format == lv.COLOR_FORMAT.I1:
-            # self._disp_buff = fb
-            # self._out_buff = bytearray(len(fb[8:]))
-
-            self._fbuff_in = framebuf.FrameBuffer(
+        elif self.color_format == lv.COLOR_FORMAT.I1 and (
+            display_config.RENDER_MODE == lv.DISPLAY_RENDER_MODE.FULL
+        ):
+            self._disp_buff = framebuf.FrameBuffer(
                 fb[8:], self.width, self.height, framebuf.MONO_HLSB
             )
-            # self._fbuff_out = framebuf.FrameBuffer(
-            #     self._out_buff, self.width, self.height, framebuf.MONO_VLSB
-            # )
+
+    def set_display(self, display):
+        self._display = display
 
     def splash(self):
         self.ssd.fill(0)
@@ -196,10 +199,18 @@ class HwDisplayDriver:
         except Exception as e:
             sys.print_exception(e)
 
-    def blit_mono(self, x1, y1, w, h, buff):
-        # FIXME: move ssd.show to final flush if using partial/direct render
-        self.ssd.blit(self._fbuff_in, 0, 0)
+    def blit_mono_full(self, x1, y1, w, h, buff):
+        self.ssd.blit(self._disp_buff, 0, 0)
         self.ssd.show()
+
+    def blit_mono_partial(self, x1, y1, w, h, buff):
+        # (buffer, width, height, format)
+        self.ssd.blit((buff[8:], w, h, framebuf.MONO_HLSB), x1, y1)
+        if self._display:
+            if self._display.flush_is_last():
+                self.ssd.show()
+        else:
+            self.ssd.show()
 
     def read_cb(self, indev, data):
         try:

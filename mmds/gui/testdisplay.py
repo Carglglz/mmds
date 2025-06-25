@@ -34,6 +34,7 @@ class TestDisplayDriver:
     ):
         self.display_drv = display_drv
         self._color_size = lv.color_format_get_size(color_format)
+        self._color_format = color_format
         self._frame_buffer1 = frame_buffer1
         self._frame_buffer2 = frame_buffer2
         self._x = 0
@@ -72,6 +73,9 @@ class TestDisplayDriver:
                 )
             if hasattr(display_drv, "set_frame_buffer"):
                 display_drv.set_frame_buffer(self._frame_buffer1)
+
+            if hasattr(display_drv, "set_display"):
+                display_drv.set_display(self.lv_display)
             self.indev = lv.indev_create()
             self.indev.set_display(lv.display_get_default())
             self.indev.set_group(lv.group_get_default())
@@ -94,23 +98,23 @@ class TestDisplayDriver:
         else:  # interactive + DummyDisplay -> SDL
             self.group = lv.group_create()
             self.group.set_default()
-            self.lv_display_int = lv.sdl_window_create(
+            self.lv_display = lv.sdl_window_create(
                 display_drv.width, display_drv.height
             )
-            lv.sdl_window_set_title(self.lv_display_int, "MicroPython-LVGL")
-            if hasattr(display_drv, "window_pos"):
+            lv.sdl_window_set_title(self.lv_display, "MicroPython-LVGL")
+            if hasattr(display_drv, "window_pos") and hasattr(
+                lv, "sdl_window_set_position"
+            ):
                 if any(display_drv.window_pos):
-                    lv.sdl_window_set_position(
-                        self.lv_display_int, *display_drv.window_pos
-                    )
-                lv.sdl_window_set_opacity(self.lv_display_int, 1.0)
-                lv.sdl_window_set_bordered(self.lv_display_int, 1)
+                    lv.sdl_window_set_position(self.lv_display, *display_drv.window_pos)
+                lv.sdl_window_set_opacity(self.lv_display, 1.0)
+                lv.sdl_window_set_bordered(self.lv_display, 1)
             self.mouse = lv.sdl_mouse_create()
             self.keyboard = lv.sdl_keyboard_create()
             self.keyboard.set_group(self.group)
             if pointer in ("sim", "encoder"):
                 self.indev = lv.indev_create()
-                self.indev.set_display(self.lv_display_int)
+                self.indev.set_display(self.lv_display)
                 self.indev.set_group(self.group)
                 self.indev.set_type(lv.INDEV_TYPE.POINTER)
                 # NOTE: only one indev pointer allowed, use the keyboard
