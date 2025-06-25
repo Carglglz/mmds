@@ -2,71 +2,32 @@
 ## mmds
 
 
-Minimal MicroPython Display System using MicroPython - LVGL + OLED monochrome display
+Minimal MicroPython Display System : a template SDK for MicroPython - LVGL
 
-
-Explore GUI development on device with a set of minimal requirements (software and hardware)
+Explore GUI development on device with the bare minimum requirements for both software and hardware
+i.e. minimal RAM + OLED monochrome display (128x64)
 
 
 <div align="center">
   <img src="docs/img/thermometer.png" width="240" height="204">
 </div>
 
-Software:
-    - MicroPython 
-    - LVGL (bindings)
-    - mmds:
-        - drivers:
-            - display 
-            - indev
-        - set of monochrome styles 
-        - set of UI widgets
-        - minimal app logic navigation
-        - tests
+- A demo GUI app 
 
-Hardware:
-    - Monochrome OLED display (128x64)
-    - Potentiometer 
-    - Button 
-    - Temperature sensor
+- Simulator
+
+- Tests
+
+- CI/CD workflow
 
 
-Demo/Simulator: (micropython unix)
-    Demo/App mmds:
-        - Top Status bar with widgets:
-            - Bluetooth indicator 
-            - Wifi signal indicator
-            - Battery indicator
-            - Clock
-        
-        - Menu Area: 3 app icons menu 
 
-            - Apps:
-                - Thermometer 
-                - Temperature Graph App
-                - System Info
+build:
 
-    Demo/Tests: ui widgets, app logic
 
-Demo/Device: 
+mmds:
 
-Demo/Drivers: Tutorial of how to integrate display/indev drivers with lvgl
 
-Demo/App mmds:
-    - Top Status bar with widgets:
-        - Bluetooth indicator 
-        - Wifi signal indicator
-        - Battery indicator
-        - Clock
-    
-    - Menu Area: 3 app icons menu (rotate potentiometer to select)
-        and click Button to enter an app, click again to return to menu.
+docs:
 
-        - Apps:
-            - Thermometer 
-            - Temperature Graph App
-            - System Info
-
-    
-Demo/Tests on device: ui widgets, app logic
 
