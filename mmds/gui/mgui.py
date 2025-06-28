@@ -10,6 +10,7 @@ import time
 import lvgl as lv  # noqa
 from .callbacks import callback
 import gc
+import os
 
 
 class Clock:
@@ -65,6 +66,14 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
         time.sleep(2)
         lv.screen_load(scr)
 
+    for name, mod in sorted(sys.modules.items()):
+        if hasattr(mod, "__file__"):
+            # Is a file
+            if name == display.display_drv.__module__:
+                print(
+                    f"DISPLAY_DRIVER: {display.display_drv.__qualname__} from {mod.__file__.replace(os.getcwd(), '.')}"
+                )
+    # print(display.display_drv.__)
     # _font = "intersb24.bin"
     # with open(f"../fonts/{_font}", "rb") as fb:
     #     font_data = fb.read()

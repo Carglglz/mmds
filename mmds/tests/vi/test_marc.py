@@ -25,6 +25,7 @@ from gui.ui.monoc import Marc
 async def test(scr, display=None):
     mbar = Marc(scr, scr=False)
 
+    mbar.set_mvalue(0)
     await asyncio.sleep_ms(500)  # await so the frame can be rendered
     print("MONO ARC TEST:")
     i = 0
@@ -37,6 +38,8 @@ async def test(scr, display=None):
             print("OK")
             break
 
+    await asyncio.sleep_ms(5)
+
 
 __file__ = globals().get("__file__", "test")
 
@@ -48,6 +51,6 @@ except Exception:
 
 
 display_config.MODE = "interactive"
-display_config.POINTER = "sim"
+display_config.INDEV = "sim"
 testrunner.run(test, __file__, disp_config=display_config)
 testrunner.devicereset()

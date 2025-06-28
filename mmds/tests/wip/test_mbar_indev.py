@@ -38,7 +38,7 @@ try:
     import display_config
 
     display_config.MODE = "interactive"
-    display_config.POINTER = "encoder"
+    display_config.INDEV = "encoder"
 except Exception:
     display_config = testrunner.display_config
 

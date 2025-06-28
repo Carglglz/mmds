@@ -1,7 +1,7 @@
 import lvgl as lv
 
 MODE = "interactive"
-POINTER = "encoder"
+INDEV = "encoder"
 WIDTH = 128
 HEIGHT = 64
 COLOR_FORMAT = lv.COLOR_FORMAT.I1

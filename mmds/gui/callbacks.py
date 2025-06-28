@@ -1,3 +1,8 @@
+# Improved MicroPython-LVGL callbacks
+# MIT license; Copyright (c) 2025 Carlos Gil
+
+# Use e.g. @callback.clicked(target,...) decorator
+
 import lvgl as lv  # noqa
 import sys
 

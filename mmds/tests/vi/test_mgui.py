@@ -164,7 +164,7 @@ try:
     import board_config
 
     display_config.MODE = "interactive"
-    display_config.POINTER = "sim"
+    display_config.INDEV = "sim"
 except Exception:
     display_config = testrunner.display_config
 

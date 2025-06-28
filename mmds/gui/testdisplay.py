@@ -13,7 +13,7 @@ class TestDisplayConfig:
     WIDTH = 240
     HEIGHT = 320
     MODE = "sim"
-    POINTER = "sim"
+    INDEV = "sim"
     COLOR_FORMAT = lv.COLOR_FORMAT.RGB888
     RENDER_MODE = lv.DISPLAY_RENDER_MODE.PARTIAL
     SHOW_INFO = True
@@ -28,7 +28,7 @@ class TestDisplayDriver:
         frame_buffer2,
         color_format=lv.COLOR_FORMAT.RGB565,
         mode="sim",
-        pointer="sim",
+        indev="sim",
         render_mode=lv.DISPLAY_RENDER_MODE.PARTIAL,
         fps=25,
     ):
@@ -80,16 +80,16 @@ class TestDisplayDriver:
             self.indev.set_display(lv.display_get_default())
             self.indev.set_group(lv.group_get_default())
             # TODO: test other types of indev
-            if pointer in ("sim", "interactive"):
+            if indev in ("sim", "interactive"):
                 _indev_type = lv.INDEV_TYPE.POINTER
 
-                if pointer == "interactive" and hasattr(display_drv, "indev_type"):
+                if indev == "interactive" and hasattr(display_drv, "indev_type"):
                     _indev_type = display_drv.indev_type
             else:
-                _indev_type = getattr(lv.INDEV_TYPE, pointer.upper())
+                _indev_type = getattr(lv.INDEV_TYPE, indev.upper())
 
             self.indev.set_type(_indev_type)
-            if hasattr(display_drv, "read_cb") and pointer != "sim":
+            if hasattr(display_drv, "read_cb") and indev != "sim":
                 self.indev.set_read_cb(display_drv.read_cb)
 
             else:
@@ -112,7 +112,7 @@ class TestDisplayDriver:
             self.mouse = lv.sdl_mouse_create()
             self.keyboard = lv.sdl_keyboard_create()
             self.keyboard.set_group(self.group)
-            if pointer in ("sim", "encoder"):
+            if indev in ("sim", "encoder"):
                 self.indev = lv.indev_create()
                 self.indev.set_display(self.lv_display)
                 self.indev.set_group(self.group)
@@ -315,13 +315,13 @@ def get_display(
     disp=tdisp,
     color_format=lv.COLOR_FORMAT.RGB888,
     mode="sim",
-    pointer="sim",
+    indev="sim",
     show_display_info=False,
     render_mode=lv.DISPLAY_RENDER_MODE.PARTIAL,
     window_pos=(None, None),
 ):
     print(f"DISPLAY_MODE: {mode.upper()}")
-    print(f"INDEV_MODE: {pointer.upper()}")
+    print(f"INDEV_MODE: {indev.upper()}")
 
     if mode == "sim":
         show_display_info = True
@@ -375,6 +375,4 @@ def get_display(
 
     fbuf1 = alloc_buffer(buffer_size)
     fbuf2 = alloc_buffer(buffer_size) if double_buf else None
-    return TestDisplayDriver(
-        disp, fbuf1, fbuf2, color_format, mode, pointer, render_mode
-    )
+    return TestDisplayDriver(disp, fbuf1, fbuf2, color_format, mode, indev, render_mode)

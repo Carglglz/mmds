@@ -2,7 +2,6 @@ import lvgl as lv
 from machine import I2C
 import ssd1306
 import framebuf
-import sys
 import pyb
 
 try:
@@ -44,7 +43,7 @@ class PotEncoder:
 
 
 class HwDisplayDriver:
-    def __init__(self, width=128, height=64, color_format=lv.COLOR_FORMAT.RGB565):
+    def __init__(self, width=128, height=64, color_format=lv.COLOR_FORMAT.I1):
         self.width = width
         self.height = height
         self.color_format = color_format
@@ -64,13 +63,10 @@ class HwDisplayDriver:
         self.ssd.rotate(True)
         self._disp_buff = None
         self.indev_type = lv.INDEV_TYPE.ENCODER
-        if color_format == lv.COLOR_FORMAT.RGB565:
-            self.blit = self.blit_rgb565
+        if display_config.RENDER_MODE == lv.DISPLAY_RENDER_MODE.PARTIAL:
+            self.blit = self.blit_mono_partial
         else:
-            if display_config.RENDER_MODE == lv.DISPLAY_RENDER_MODE.PARTIAL:
-                self.blit = self.blit_mono_partial
-            else:
-                self.blit = self.blit_mono_full
+            self.blit = self.blit_mono_full
         self._display = None
 
     @property
@@ -82,11 +78,7 @@ class HwDisplayDriver:
         self._debug = x
 
     def set_frame_buffer(self, fb):
-        if self.color_format == lv.COLOR_FORMAT.RGB565:
-            self._disp_buff = framebuf.FrameBuffer(
-                fb, self.width, self.height // 10, framebuf.RGB565
-            )
-        elif self.color_format == lv.COLOR_FORMAT.I1 and (
+        if self.color_format == lv.COLOR_FORMAT.I1 and (
             display_config.RENDER_MODE == lv.DISPLAY_RENDER_MODE.FULL
         ):
             self._disp_buff = framebuf.FrameBuffer(
@@ -106,98 +98,6 @@ class HwDisplayDriver:
         self.ssd.fill_rect(77, 46, 2, 4, 0)
         self.ssd.text("MicroPython", 22, 56, 1)
         self.ssd.show()
-
-    def rgb565_to_mono(self, rgb565_buffer, width, height, x_off, y_off):
-        """
-        Convert RGB565 buffer to monochrome buffer using FrameBuffer
-
-        Args:
-            rgb565_buffer: Input buffer of 16-bit RGB565 pixels (bytearray or bytes)
-            width: Image width in pixels
-            height: Image height in pixels
-
-        """
-
-        # C optimized FrameBuffer functions
-        if hasattr(self._disp_buff, "resize"):
-            self._disp_buff.resize(width, height)
-            self.ssd.blit(self._disp_buff, x_off, y_off)
-
-        else:
-            # This is not efficient due to memory allocation --> fragmentation
-            self._disp_buff = framebuf.FrameBuffer(
-                rgb565_buffer, width, height, framebuf.RGB565
-            )
-
-            for y in range(height):
-                for x in range(width):
-                    pixel = self._disp_buff.pixel(x, y)
-                    r = ((pixel >> 11) & 0x1F) << 3  # 5 bits to 8 bits
-                    g = ((pixel >> 5) & 0x3F) << 2  # 6 bits to 8 bits
-                    b = (pixel & 0x1F) << 3  # 5 bits to 8 bits
-
-                    # Calculate luminance (using approximate weights)
-                    luminance = (r * 299 + g * 587 + b * 114) // 1000
-                    # if luminance > 0:
-                    #     print(f"x:{x}, y:{y}, R:{r}, G:{g}, B:{b}, L:{luminance}")
-                    # Set pixel in monochrome buffer (FrameBuffer handles HLSB packing)
-                    self.ssd.pixel(
-                        x + x_off, y + y_off, 1 if luminance >= threshold else 0
-                    )
-
-    def rgb565_to_mono_rot_90(
-        self, rgb565_buffer, width, height, x_off, y_off, threshold=128
-    ):
-        # Create FrameBuffer objects
-
-        # self._disp_buff.resize(width, height)
-        self._disp_buff = framebuf.FrameBuffer(
-            rgb565_buffer, width, height, framebuf.RGB565
-        )
-        # Rotate the buffer: process each pixel
-        for y in range(height):
-            for x in range(width):
-                # Translate to new buffer center
-
-                pixel = self._disp_buff.pixel(x, y)
-
-                # Extract RGB components
-                r = ((pixel >> 11) & 0x1F) << 3  # 5 bits to 8 bits
-                g = ((pixel >> 5) & 0x3F) << 2  # 6 bits to 8 bits
-                b = (pixel & 0x1F) << 3  # 5 bits to 8 bits
-                # print(f"x:{x}, y:{y}, R:{r}, G:{g}, B:{b}")
-
-                # Calculate luminance (using approximate weights)
-                luminance = (r * 299 + g * 587 + b * 114) // 1000
-
-                # if luminance >= threshold:
-                #     print(self.ct(x + x_off, y + y_off))
-
-                self.ssd.pixel(
-                    *self.ct(x + x_off, y + y_off),
-                    1 if luminance >= threshold else 0,
-                )
-
-    def ct(self, x, y):
-        # 0, 0 -> 127, 0
-        # 63, 0 -> 127, 63
-        # 63, 127 -> 0, 63
-        # 0, 127 -> 0, 0
-        _x = 127 - y
-        _y = x
-        return _x, _y
-
-    def blit_rgb565(self, x1, y1, w, h, buff):
-        try:
-            # if len(buff) != len(self.disp_mv):
-            # print(f"[{x1,y1, w,h}, ")
-            if self.vdisp:
-                self.rgb565_to_mono_rot_90(buff, w, h, x1, y1, 120)
-            else:
-                self.rgb565_to_mono(buff, w, h, x1, y1)
-            self.ssd.show()
-        except Exception as e:
-            sys.print_exception(e)
 
     def blit_mono_full(self, x1, y1, w, h, buff):
         self.ssd.blit(self._disp_buff, 0, 0)

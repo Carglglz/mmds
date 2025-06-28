@@ -1,8 +1,8 @@
 [submodule "micropython"]
-	path = build/micropython
+	path = build-mplv/micropython
 	url = https://github.com/Carglglz/micropython.git
 	branch = lvgl
 [submodule "user_modules/lv_binding_micropython"]
-	path = build/user_modules/lv_binding_micropython
+	path = build-mplv/user_modules/lv_binding_micropython
 	url = https://github.com/Carglglz/lv_binding_micropython.git
 	branch = dev

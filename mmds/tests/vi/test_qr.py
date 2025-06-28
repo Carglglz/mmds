@@ -36,7 +36,7 @@ async def test(scr, display=None):
     i = 0
     while True:
         i += 1
-        await asyncio.sleep_ms(100)
+        await asyncio.sleep_ms(20)
         if i == 100:
             print("OK")
             break
@@ -52,6 +52,6 @@ except Exception:
 
 
 display_config.MODE = "interactive"
-display_config.POINTER = "sim"
+display_config.INDEV = "sim"
 testrunner.run(test, __file__, disp_config=display_config)
 testrunner.devicereset()

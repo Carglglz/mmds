@@ -12,7 +12,7 @@ import sys
 
 # debug path modules, check if running from fs " " or frozen ".frozen"
 # fs shows full file path (.py or .mpy), frozen just filepath.py
-for name, mod in sys.modules.items():
+for name, mod in sorted(sys.modules.items()):
     if hasattr(mod, "__file__"):
         # Is a file
         print(f"- mod: {name} from {mod.__file__}")

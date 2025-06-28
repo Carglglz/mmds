@@ -2,17 +2,18 @@
 ## mmds
 
 
-Minimal MicroPython Display System : a template SDK for MicroPython - LVGL
+Minimal MicroPython Display System : a tiny SDK for MicroPython - LVGL
 
-Explore GUI development on device with the bare minimum requirements for both software and hardware
-i.e. minimal RAM + OLED monochrome display (128x64)
-
+Explore GUI development on device with minimum requirements for both software and hardware
+i.e. ~ 60kB RAM + OLED monochrome display (128x64)
 
 <div align="center">
   <img src="docs/img/thermometer.png" width="240" height="204">
 </div>
 
-- A demo GUI app 
+#### Features:
+
+- GUI app 
 
 - Simulator
 
@@ -21,13 +22,30 @@ i.e. minimal RAM + OLED monochrome display (128x64)
 - CI/CD workflow
 
 
+#### Build 
 
-build:
-
-
-mmds:
+How to build the simulator and device firmware --> [`./build-mplv`](./build-mplv/README.md)
 
 
-docs:
+#### mmds 
+
+Application [work tree](./mmds/README.md)  
+```
+mmds/
+├── README.md
+├── audio
+├── device
+├── displays
+├── fonts
+├── gui
+├── manifest.py
+├── sim
+└── tests
+
+```
+
+#### Docs
+
+Display and Input device integration see [docs](./docs/README.md)
 
 

@@ -166,7 +166,7 @@ try:
     import board_config
 
     display_config.MODE = "sim"
-    display_config.POINTER = "sim"
+    display_config.INDEV = "sim"
     display_config.COLOR_FORMAT = lv.COLOR_FORMAT.RGB888
     display_config.WIDTH = 128
     display_config.HEIGHT = 64
