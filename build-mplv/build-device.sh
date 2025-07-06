@@ -2,6 +2,6 @@
 
 cd micropython 
 
-make -C ports/stm32 submodules
-make -C ports/stm32 BOARD_DIR=../../../ports/stm32/boards/PYBOARD-LVGL
+make -C ports/esp32 submodules
+make -C ports/esp32 BOARD_DIR=../../../ports/esp32/boards/ESP32-LVGL
 

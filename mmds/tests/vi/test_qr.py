@@ -36,7 +36,7 @@ async def test(scr, display=None):
     i = 0
     while True:
         i += 1
-        await asyncio.sleep_ms(20)
+        await asyncio.sleep_ms(10)
         if i == 100:
             print("OK")
             break

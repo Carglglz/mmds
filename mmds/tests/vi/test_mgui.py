@@ -26,7 +26,7 @@ import lvgl as lv
 # This is a status bar test
 
 
-async def test_gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
+async def test_gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None, **kwargs):
     print("MONO GUI TEST:")
     # TEMP SENSOR
     ts = TMP36(temp)

@@ -76,19 +76,18 @@ Starting asyncio REPL...
 
 Which will do the following:
 
-#### Build MicroPython + LVGL (stm32 port)
+#### Build MicroPython + LVGL (esp32 port)
       
 ```sh
 # working-directory: ./build-mplv/micropython 
 
-$ source tools/ci.sh && ci_stm32_setup
+$ source tools/ci.sh && ci_esp32_idf_setup
+$ source tools/ci.sh && ci_esp32_build_common
 
-$ make -C ports/stm32 BOARD_DIR=../../../ports/stm32/boards/PYBOARD-LVGL
+$ make -C ports/esp32 submodules
+$ make -C ports/esp32 BOARD_DIR=../../../ports/esp32/boards/ESP32-LVGL
 ```
 
-#### Flash device see stm32 port [README](https://github.com/Carglglz/micropython/tree/86397469bbcc974c2a003a17010e2249325323a5/ports/stm32#flashing-the-firmware-using-dfu-mode)
-
-`$ make -C ports/stm32 BOARD_DIR=../../../ports/stm32/boards/PYBOARD-LVGL
-deploy` 
+#### Flash device see esp32 port [README](https://github.com/micropython/micropython/tree/master/ports/esp32)
 
 Then sync `../mmds/device` to device.

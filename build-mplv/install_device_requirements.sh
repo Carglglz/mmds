@@ -5,14 +5,12 @@ cd micropython
 unamestr=$(uname)
 if [[ "$unamestr" == 'Linux' ]]; then
 
-    source tools/ci.sh && ci_stm32_setup
+    source tools/ci.sh && ci_esp32_idf_setup
+    source tools/ci.sh && ci_esp32_build_common
 
 elif [[ "$unamestr" == 'Darwin' ]]; then
 
-    brew install gcc-arm-none-eabi 
-    arm-none-eabi-gcc --version
-    pip3 install pyelftools
-    pip3 install ar
-    pip3 install pyhy
 
+    source tools/ci.sh && ci_esp32_idf_setup
+    source tools/ci.sh && ci_esp32_build_common
 fi

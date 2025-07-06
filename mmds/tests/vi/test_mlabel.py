@@ -40,7 +40,7 @@ async def test(scr, display=None):
     i = 0
     while True:
         i += 1
-        await asyncio.sleep_ms(20)
+        await asyncio.sleep_ms(5)
         if i == 100:
             break
 
@@ -51,7 +51,7 @@ async def test(scr, display=None):
     i = 0
     while True:
         i += 1
-        await asyncio.sleep_ms(20)
+        await asyncio.sleep_ms(5)
         if i == 100:
             break
 
@@ -66,7 +66,7 @@ async def test(scr, display=None):
     i = 0
     while True:
         i += 1
-        await asyncio.sleep_ms(20)
+        await asyncio.sleep_ms(5)
         if i == 100:
             break
 
@@ -77,7 +77,7 @@ async def test(scr, display=None):
     i = 0
     while True:
         i += 1
-        await asyncio.sleep_ms(20)
+        await asyncio.sleep_ms(5)
         if i == 100:
             print("OK")
             break
