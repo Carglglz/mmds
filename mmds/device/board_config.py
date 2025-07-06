@@ -1,16 +1,22 @@
 import sys
 import os
+import random
+import machine
+
+machine.freq(240000000)
+
 
 # sys.path is = ['', '.frozen'] by default so
 # To run from frozen: # uncomment
-
 sys.path[0], sys.path[1] = sys.path[1], sys.path[0]
 
 sys.path.append(f"{os.getcwd()}/display")
-sys.path.append(f"{os.getcwd()}/audio")
 
-import pyb
-from pybbuzz import Buzzer
+sys.path.append("/audio")
+
+from espbuzz import AsyncBuzzer
+
+from battery import battery
 
 
 class SoundDevice:
@@ -31,11 +37,25 @@ class SoundDevice:
             self._mute = b
 
 
-adc = pyb.ADC(pyb.Pin.board.X19)
-stemp = pyb.ADC(pyb.Pin.board.Y11)
+class ADC:
+    def __init__(self, rng=(2000, 3000)):
+        self.rng = rng
+
+    def read(self):
+        return random.randint(*self.rng)
+
+
+adc = machine.ADC(machine.Pin(34))
+adc.atten(machine.ADC.ATTN_11DB)
+# adc.deinit()
+# adc = ADC()
+# stemp = ADC(rng=(800, 1000))
+stemp = machine.ADC(machine.Pin(36))
+stemp.atten(machine.ADC.ATTN_11DB)
+
 dt = 100
-bz = SoundDevice(Buzzer("X1"))
+
+bz = SoundDevice(AsyncBuzzer(25), fq=1440)
 bz.beep()
 
-
-conf = {"adc": adc, "temp": stemp, "dt": dt, "buzz": bz}
+conf = {"adc": adc, "temp": stemp, "dt": dt, "buzz": bz, "batt": battery}

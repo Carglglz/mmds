@@ -59,7 +59,7 @@ class TMP36:
         return (((self.adc.read() / 4095) * 3.3) - 0.5) * 100
 
 
-async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
+async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None, batt=None):
     # SPLASH
     if hasattr(display.display_drv, "splash"):
         display.display_drv.splash()
@@ -169,7 +169,10 @@ async def gui(scr, display=None, adc=None, temp=None, dt=20, buzz=None):
         while True:
             i = int((adc.read() / 4095) * 100)
             tmp = ts.read_tmp()
-            sb.batt.set_bvalue(100 - i)
+            if not batt:
+                sb.batt.set_bvalue(100 - i)
+            else:
+                sb.batt.set_bvalue(batt.level())
             sb.wifi.set_wvalue(-i)
             sb.clock.set_text(clk.time())
             if menu._backmode:

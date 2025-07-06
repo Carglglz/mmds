@@ -1,8 +1,9 @@
 import lvgl as lv
-from machine import I2C
+from machine import I2C, Pin, ADC
 import ssd1306
 import framebuf
-import pyb
+
+# import pyb
 
 try:
     import display_config
@@ -23,8 +24,9 @@ class Device:
 
 
 class PotEncoder:
-    def __init__(self, pin=pyb.Pin.board.X19):
-        self.adc = pyb.ADC(pin)
+    def __init__(self, pin=Pin(34)):
+        self.adc = ADC(pin)
+        self.adc.atten(ADC.ATTN_11DB)
         self._last_v = self.read()
 
     def read(self):
@@ -42,6 +44,18 @@ class PotEncoder:
         return 0
 
 
+class Button:
+    def __init__(self, outpin=33, inpin=27):
+        self.input = Pin(inpin)
+        self.input.init(Pin.IN, Pin.PULL_DOWN)
+
+        self.output = Pin(outpin, Pin.OUT)
+        self.output.value(1)
+
+    def value(self):
+        return self.input.value()
+
+
 class HwDisplayDriver:
     def __init__(self, width=128, height=64, color_format=lv.COLOR_FORMAT.I1):
         self.width = width
@@ -50,13 +64,13 @@ class HwDisplayDriver:
         self.color_depth = lv.color_format_get_bpp(color_format)
         self.color_size = lv.color_format_get_size(color_format)
         self.devices = [Device()]
-        self.btn = pyb.Switch()
+        self.btn = Button()
         self.pot = PotEncoder()
         self._debug = DEBUG
         self._press_event = False
         self._key_pressed = None
-        self.i2c = I2C("X")
-        self.ssd = ssd1306.SSD1306_I2C(128, 64, self.i2c)
+        self.i2c = I2C(scl=Pin(22), sda=Pin(23))
+        self.ssd = ssd1306.SSD1306_I2C(width, height, self.i2c)
         self.ssd.fill(0)
         self.ssd.show()
         self.vdisp = width < height
@@ -113,6 +127,7 @@ class HwDisplayDriver:
             self.ssd.show()
 
     def read_cb(self, indev, data):
+        # return
         try:
             # print("read_cb:")
             if self.btn.value() and not self._press_event:
