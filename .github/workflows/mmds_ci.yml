@@ -2,6 +2,12 @@ name: MicroPython-LVGL CI
 
 on:
   push:
+    # tags-ignore:
+    #   - '**'
+    tags:
+        - '**'
+    branches:
+      - main
   pull_request:
 
 
@@ -16,7 +22,7 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        port: ['unix', 'stm32']
+        port: ['unix', 'stm32', 'esp32']
     steps:
     - uses: ammaraskar/gcc-problem-matcher@master
     - uses: actions/setup-python@v5
@@ -31,8 +37,8 @@ jobs:
         persist-credentials: true
         clean: true
         sparse-checkout-cone-mode: true
-        fetch-depth: 10
-        fetch-tags: true
+        fetch-depth: 0
+        fetch-tags: false
         show-progress: true
         lfs: true
         submodules: true
@@ -54,6 +60,7 @@ jobs:
       run: make -j $(nproc) -C mpy-cross
 
     - name: Update ${{ matrix.port }} port submodules
+      if: matrix.port != 'esp32'
       working-directory: ./build-mplv/micropython
       run: make -C ports/${{ matrix.port}} DEBUG=1 submodules
 
@@ -77,6 +84,14 @@ jobs:
       if: matrix.port == 'stm32'
       working-directory: ./build-mplv/micropython
       run: make -j $(nproc) -C ports/stm32 BOARD_DIR=../../../ports/stm32/boards/PYBOARD-LVGL
+
+    - name: Build esp32 port
+      if: matrix.port == 'esp32'
+      working-directory: ./build-mplv/micropython
+      run:  | 
+        source tools/ci.sh && ci_esp32_idf_setup
+        source tools/ci.sh && ci_esp32_build_common
+        make -j $(nproc) -C ports/esp32 BOARD_DIR=../../../ports/esp32/boards/ESP32-LVGL
 
     - name: Run MicroPython Tests
       if: matrix.port == 'unix'
@@ -108,6 +123,14 @@ jobs:
         path: ./build-mplv/micropython/ports/stm32/build-PYBOARD-LVGL/firmware.dfu 
 
 
+    - name: Upload ESP32-LVGL firmware
+      if: matrix.port == 'esp32'
+      uses: actions/upload-artifact@v4
+      with:
+        name: esp32-micropython-lvgl-v1.26.bin
+        path: ./build-mplv/micropython/ports/esp32/build-ESP32-LVGL/firmware.bin 
+
+
 
   build-lvgl-micropython-macos:
     runs-on: macos-latest
@@ -120,8 +143,8 @@ jobs:
         persist-credentials: true
         clean: true
         sparse-checkout-cone-mode: true
-        fetch-depth: 10
-        fetch-tags: true
+        fetch-depth: 0
+        fetch-tags: false
         show-progress: true
         lfs: true
         submodules: true
