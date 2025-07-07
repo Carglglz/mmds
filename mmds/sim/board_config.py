@@ -23,3 +23,4 @@ stemp = ADC(rng=(800, 1000))
 dt = 500
 
 conf = {"adc": adc, "temp": stemp, "dt": dt}
+app = "demo"

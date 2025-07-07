@@ -3,8 +3,16 @@
 import board_config
 
 # gui
+# config which app to run --> app template
+if hasattr(board_config, "app"):
+    import sys
 
-from gui import mgui
+    sys.path.append("apps")
+    app = __import__(board_config.app, [], [], [])
+
+else:
+    from gui import mgui as app
+
 
 # gc.collect()
 
@@ -20,4 +28,5 @@ for name, mod in sorted(sys.modules.items()):
         # Is a package
         print(f"- package: {name} from {mod.__path__}")
 
-mgui.run(**board_config.conf)
+print(f"APP: {app.__name__} from {app.__file__}")
+app.run(**board_config.conf)
