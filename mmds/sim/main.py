@@ -26,5 +26,5 @@ for name, mod in sorted(sys.modules.items()):
         # Is a package
         print(f"- package: {name} from {mod.__path__.replace(os.getcwd(), '.')}")
 
-print(f"APP: {app.__name__} from {app.__file__.replace(os.getcwd(), '.')}")
+print(f"APP: {app.__name__.upper()}")
 app.run(**board_config.conf)
