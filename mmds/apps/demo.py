@@ -209,4 +209,3 @@ def run(**kwargs):
         sys.print_exception(e)
     finally:
         print("LVGL DEINIT OK")
-        testrunner.devicereset()

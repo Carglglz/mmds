@@ -170,4 +170,3 @@ except Exception:
 
 
 testrunner.run(test_gui, __file__, disp_config=display_config, **board_config.conf)
-testrunner.devicereset()

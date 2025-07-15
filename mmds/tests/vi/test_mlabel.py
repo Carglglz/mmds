@@ -95,4 +95,3 @@ except Exception:
 display_config.MODE = "interactive"
 display_config.INDEV = "sim"
 testrunner.run(test, __file__, disp_config=display_config)
-testrunner.devicereset()

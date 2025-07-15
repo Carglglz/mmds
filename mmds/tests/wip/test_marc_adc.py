@@ -45,4 +45,3 @@ except Exception:
 
 
 testrunner.run(demo, __file__, disp_config=display_config)
-testrunner.devicereset()

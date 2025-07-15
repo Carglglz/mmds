@@ -61,4 +61,3 @@ display_config.COLOR_FORMAT = lv.COLOR_FORMAT.RGB888
 display_config.WIDTH = 128
 display_config.HEIGHT = 64
 testrunner.run(mono_arc_test, __file__, disp_config=display_config)
-testrunner.devicereset()

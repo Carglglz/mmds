@@ -58,4 +58,3 @@ except Exception:
 
 
 testrunner.run(test, __file__, disp_config=display_config)
-testrunner.devicereset()
